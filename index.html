@@ -1343,44 +1343,103 @@ function renderPhCalc(){
   });
 }
 
-// ========== 药物化学结构式卡片（按浙大349考纲整理） ==========
+// ========== 药物化学结构式卡片（按浙大349考纲完整整理） ==========
+var PUBCHEM_IMG="https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/";
 var STRUCT_CARDS=[
   {cat:"中枢神经系统药物",items:[
-    {name:"苯巴比妥",class:"镇静催眠药·巴比妥类",struct:"母核：嘧啶三酮环（巴比妥酸）。C5位有两个烃基取代（苯基+乙基），使作用时间延长；N1位可被取代。",features:"C5苯基取代→抗癫痫活性增强；C5乙基取代→镇静作用。无硫取代→长效。",use:"镇静、催眠、抗癫痫大发作。",tip:"巴比妥类核心：丙二酸二乙酯+尿素缩合成环。苯巴比妥是C5苯基+乙基双取代。"},
-    {name:"地西泮",class:"镇静催眠药·苯二氮卓类",struct:"母核：1,4-苯并二氮卓环（七元亚胺环稠合苯环）。7位硝基（-NO₂）、5位苯基（2'-氯）取代、1位甲基。",features:"7位硝基→增强活性；5位苯基2'-Cl→增强亲和力；1,2位可形成内酰胺。活化代谢为去甲地西泮→奥沙西泮。",use:"抗焦虑、镇静催眠、抗惊厥、术前给药。",tip:"苯二氮卓类核心结构=苯环+七元二氮卓环。记住'7硝5苯1甲基'。地西泮代谢产物仍有活性。"},
-    {name:"苯妥英钠",class:"抗癫痫药·乙内酰脲类",struct:"母核：乙内酰脲环（五元咪唑烷酮）。5,5位双苯基取代，N3位H被Na取代成盐。",features:"5,5-二苯基取代→抗癫痫活性；芳环对位取代降低活性。苯环无取代时活性最佳。",use:"癫痫大发作首选，心律失常。",tip:"乙内酰脲=海因。苯妥英的5,5-二苯基是关键。代谢发生苯环对位羟化。"},
-    {name:"氯丙嗪",class:"抗精神失常药·吩噻嗪类",struct:"母核：吩噻嗪环（两个苯环稠合含S、N的六元环）。2位氯取代、10位N-二甲氨基丙基侧链。",features:"2位Cl取代→抗精神病活性增强；10位侧链为二甲氨基丙基。脂肪胺侧链→镇静强。",use:"精神分裂症、镇吐、人工冬眠。",tip:"吩噻嗪类核心=两个苯环+一个S+一个N。2位取代基决定活性：Cl>CF₃>H。侧链碳数3最佳。"},
-    {name:"吗啡",class:"镇痛药·阿片受体激动剂",struct:"母核：菲环骨架（4个稠环：A/B/C/D）。含：①酚羟基（C3-OH）；②醇羟基（C6-OH）；③N-甲基哌啶环；④4,5位氧桥；⑤季碳C13连接醇羟基。",features:"3-OH（酚羟基）→镇痛活性必需；6-OH→增强毒性但不增强活性；4,5位氧桥断裂活性下降；N-CH₃→活性强。",use:"剧烈疼痛（晚期癌症、创伤）、心源性哮喘。",tip:"吗啡5个结构要点记口诀：'酚羟活、醇羟毒、氧桥保、哌啶效、双键强'。N上甲基→活性，N上烯丙基→拮抗剂（纳洛酮）。"}
+    {name:"苯巴比妥",en:"phenobarbital",class:"镇静催眠药·巴比妥类",struct:"母核：嘧啶三酮环（巴比妥酸）。C5位苯基+乙基双取代，N1位可被取代。",features:"C5苯基→抗癫痫活性增强；C5乙基→镇静。无硫取代→长效。",use:"镇静、催眠、抗癫痫大发作。",tip:"巴比妥类核心：丙二酸二乙酯+尿素缩合成环。'苯巴比妥=C5苯基+乙基'。"},
+    {name:"硫喷妥",en:"thiopental",class:"镇静催眠药·巴比妥类",struct:"母核：嘧啶三酮环。C5位戊基+乙基取代，C2位酮基被硫取代（硫代巴比妥）。",features:"C2位硫取代→脂溶性大增→起效快（超短效）；硫原子增强透过血脑屏障。",use:"静脉麻醉诱导。",tip:"硫喷妥vs苯巴比妥：C2位O→S替换。硫取代→脂溶性↑→起效快、作用短。"},
+    {name:"地西泮",en:"diazepam",class:"镇静催眠药·苯二氮卓类",struct:"母核：1,4-苯并二氮卓环（七元亚胺环稠合苯环）。7位硝基、5位苯基(2'-氯)、1位甲基。",features:"7位硝基→增强活性；5位苯基2'-Cl→增强亲和力；代谢为去甲地西泮→奥沙西泮（仍有活性）。",use:"抗焦虑、镇静催眠、抗惊厥、术前给药。",tip:"苯二氮卓核心=苯环+七元二氮卓环。'7硝5苯1甲基'。代谢产物仍有活性。"},
+    {name:"艾司唑仑",en:"estazolam",class:"镇静催眠药·苯二氮卓类",struct:"母核：1,4-苯并二氮卓环。1,2位并入三唑环（融合三唑），7位硝基。",features:"1,2位并合三唑环→活性显著增强（三唑环增强亲和力）；7位硝基→增强活性。",use:"失眠、焦虑、癫痫。",tip:"艾司唑仑=地西泮+1,2位并合三唑环。三唑环并入→活性大增。'唑仑'后缀=含三唑。"},
+    {name:"氯氮卓",en:"chlordiazepoxide",class:"镇静催眠药·苯二氮卓类",struct:"母核：1,4-苯并二氮卓环。2位甲氨基、7位氯、N-氧化物。",features:"首个苯二氮卓类药物；N-氧化物→体内代谢为活性形式；2位甲氨基。",use:"焦虑症、酒精戒断。",tip:"氯氮卓是第一个苯二氮卓（1960）。N-氧化物是前药形式。"},
+    {name:"苯妥英钠",en:"phenytoin",class:"抗癫痫药·乙内酰脲类",struct:"母核：乙内酰脲环（五元咪唑烷酮）。5,5位双苯基取代，N3位H被Na取代成盐。",features:"5,5-二苯基取代→抗癫痫活性；芳环对位取代降低活性。无取代时活性最佳。",use:"癫痫大发作首选、心律失常。",tip:"乙内酰脲=海因。5,5-二苯基是关键。代谢为对位羟化产物。"},
+    {name:"卡马西平",en:"carbamazepine",class:"抗癫痫药·三环类",struct:"母核：5H-二苯并[b,f]氮卓环（三环亚胺结构）。5位甲酰胺基（-CONH₂）。",features:"5H-二苯并氮卓骨架→抗癫痫活性；甲酰胺基→必需；10,11位环氧代谢产物仍有活性。",use:"癫痫部分性发作、三叉神经痛、躁狂症。",tip:"卡马西平=三环二苯并氮卓+5位甲酰胺。10,11位环氧化代谢仍有活性。"},
+    {name:"丙戊酸钠",en:"valproate",class:"抗癫痫药·脂肪酸类",struct:"母核：直链脂肪酸。2-丙基戊酸（二丙基乙酸）的钠盐。",features:"短链脂肪酸→广谱抗癫痫；结构简单，无芳环；抑制GABA转氨酶→增强GABA能神经传递。",use:"各型癫痫（广谱）、双相情感障碍。",tip:"丙戊酸钠结构最简单：2-丙基戊酸钠。广谱抗癫痫，抑制GABA降解。"},
+    {name:"氯丙嗪",en:"chlorpromazine",class:"抗精神失常药·吩噻嗪类",struct:"母核：吩噻嗪环（两个苯环稠合含S、N的六元环）。2位氯、10位N-二甲氨基丙基侧链。",features:"2位Cl→增强活性；10位脂肪胺侧链（3碳）→镇静强。侧链碳数3最佳。",use:"精神分裂症、镇吐、人工冬眠。",tip:"吩噻嗪核心=两苯环+S+N。2位取代基活性：CF₃>Cl>H。3碳侧链最佳。"},
+    {name:"氟哌啶醇",en:"haloperidol",class:"抗精神失常药·丁酰苯类",struct:"母核：丁酰苯骨架（对氟苯基丁酮）。连接4-羟基哌啶（含苯并咪唑酮）。",features:"对氟苯丁酮→抗精神病活性；哌啶环→必需；不含吩噻嗪环。",use:"精神分裂症（急性/慢性）、抽动秽语综合征。",tip:"丁酰苯类=对氟苯基丁酮+哌啶。与吩噻嗪不同母核但作用相似。锥体外系反应较重。"},
+    {name:"吗啡",en:"morphine",class:"镇痛药·阿片受体激动剂",struct:"母核：菲环骨架（A/B/C/D四稠环）。含：①3位酚羟基；②6位醇羟基；③N-甲基哌啶环；④4,5位氧桥；⑤C13季碳连醇羟基。",features:"3-OH（酚羟基）→镇痛活性必需；6-OH→增强毒性；N-CH₃→激动活性，N-烯丙基→拮抗（纳洛酮）。",use:"剧烈疼痛（晚期癌症、创伤）、心源性哮喘。",tip:"吗啡五要点：'酚羟活、醇羟毒、氧桥保、哌啶效、双键强'。N上取代基决定激动/拮抗。"},
+    {name:"哌替啶",en:"meperidine",class:"镇痛药·哌啶类合成镇痛药",struct:"母核：4-苯基哌啶。4位苯基、4位酯基（甲酸乙酯）、1位甲基。",features:"4-苯基哌啶→镇痛活性；酯基→不同于吗啡但活性相似；N-甲基→激动活性。",use:"各种剧痛（创伤、术后、内脏绞痛）、麻醉前给药。",tip:"哌替啶=4-苯基哌啶+酯基。合成镇痛药，结构比吗啡简单。作用时间短于吗啡。"},
+    {name:"美沙酮",en:"methadone",class:"镇痛药·氨基酮类",struct:"母核：二苯基丙胺骨架。含：3,3-二苯基-N,N-二甲基-1-氨基丙酮（手性中心C3）。",features:"氨基酮结构→镇痛活性；C3手性→左旋活性强；无哌啶/菲环但与吗啡空间构象相似。",use:"慢性疼痛、阿片依赖替代治疗（戒毒）。",tip:"美沙酮=二苯丙胺酮。虽结构不同于吗啡，但构象相似→结合相同受体。用于戒毒替代。"}
   ]},
   {cat:"外周神经系统药物",items:[
-    {name:"阿托品",class:"抗胆碱药·M受体阻断剂",struct:"母核：托品（莨菪醇，含桥环双环结构）+ 托品酸（β-苯基-α-羟甲基丙酸）成酯。托品含N-甲基桥环。",features:"叔胺结构可透过血脑屏障；6位羟化→活性降低（与山莨菪碱的区别）；无季铵盐。",use:"散瞳、抑制腺体分泌、抗休克、有机磷中毒解救。",tip:"阿托品=莨菪醇+托品酸的酯。天然左旋活性强，临床用消旋体（外消旋）。东莨菪碱6,7位有环氧桥→中枢镇静更强。"},
-    {name:"肾上腺素",class:"拟肾上腺素药",struct:"母核：β-苯乙胺骨架。3,4位邻苯二酚（儿茶酚）、β位羟基、N-甲基取代。",features:"3,4-OH（儿茶酚）→直接作用受体活性强，但易代谢失活；N-甲基→α、β受体均激动；N-异丙基→β选择性增强（异丙肾上腺素）。",use:"心脏骤停、过敏性休克、局部止血、支气管哮喘急性发作。",tip:"儿茶酚胺类=苯环3,4位双OH。记住'3,4位定生死'：去甲肾上腺素（N-H）、肾上腺素（N-CH₃）、异丙肾（N-异丙基）依次β效应增强。"},
-    {name:"普萘洛尔",class:"抗肾上腺素药·β受体阻断剂",struct:"母核：芳氧丙醇胺骨架（-O-CH₂-CH(OH)-CH₂-NH-R）。芳环为萘环，N-异丙基取代。",features:"芳氧丙醇胺比苯乙醇胺活性更强；β位仲醇构型与天然一致(R)；N-异丙基/叔丁基→非选择性β阻断。",use:"高血压、心绞痛、心律失常、甲亢辅助。",tip:"β阻断剂两大骨架：芳氧丙醇胺（普萘洛尔）和苯乙醇胺。芳氧丙醇胺是药效团。N上取代基决定选择性：异丙基/叔丁基→非选择，4-甲氧乙基→β₁选择性（美托洛尔）。"}
+    {name:"阿托品",en:"atropine",class:"抗胆碱药·M受体阻断剂",struct:"母核：托品（莨菪醇，含桥环双环）+ 托品酸（β-苯基-α-羟甲基丙酸）成酯。N-甲基桥环。",features:"叔胺→可透过血脑屏障；6位无羟基（区别于山莨菪碱）；消旋体。",use:"散瞳、抑制腺体分泌、抗休克、有机磷中毒解救。",tip:"阿托品=莨菪醇+托品酸酯。天然左旋强，临床用消旋体。东莨菪碱6,7位环氧桥→中枢镇静更强。"},
+    {name:"东莨菪碱",en:"scopolamine",class:"抗胆碱药·M受体阻断剂",struct:"母核：托品+托品酸酯（同阿托品）。区别：6,7位有环氧桥（-O-）。",features:"6,7位环氧桥→脂溶性增强→中枢镇静作用更强；抗晕动病。",use:"晕动病、麻醉前给药、帕金森辅助。",tip:"东莨菪碱vs阿托品：多了6,7位环氧桥→中枢作用更强。'东'→镇静。"},
+    {name:"新斯的明",en:"neostigmine",class:"抗胆碱酯酶药",struct:"母核：二甲氨基苯酚酯。含：3-二甲氨基苯酚+甲氨基甲酸酯，N上甲基（季铵盐）。",features:"氨基甲酸酯→可逆抑制胆碱酯酶；季铵盐→不透过血脑屏障（外周作用）；二甲氨基→必需。",use:"重症肌无力、术后肠麻痹、非去极化肌松药拮抗。",tip:"新斯的明=季铵盐（不进脑）+氨基甲酸酯（可逆抑制）。毒扁豆碱是叔胺（可进脑）。"},
+    {name:"肾上腺素",en:"epinephrine",class:"拟肾上腺素药",struct:"母核：β-苯乙胺骨架。3,4位邻苯二酚（儿茶酚）、β位羟基、N-甲基取代。",features:"3,4-OH（儿茶酚）→直接激动受体，易代谢失活；N-甲基→α、β均激动。",use:"心脏骤停、过敏性休克、支气管哮喘急性发作、局部止血。",tip:"儿茶酚胺=3,4位双OH。'3,4定生死'：去甲肾(N-H)→肾上腺素(N-CH₃)→异丙肾(N-异丙基)，β效应递增。"},
+    {name:"去甲肾上腺素",en:"norepinephrine",class:"拟肾上腺素药",struct:"母核：β-苯乙胺骨架。3,4位儿茶酚、β位羟基、N上无取代（伯胺）。",features:"N-H（伯胺）→以α受体激动为主；儿茶酚→直接作用但易失活。",use:"休克、低血压（外周血管收缩）。",tip:"去甲肾vs肾上腺素：N上无甲基→以α效应为主（缩血管升压）。"},
+    {name:"异丙肾上腺素",en:"isoproterenol",class:"拟肾上腺素药",struct:"母核：β-苯乙胺骨架。3,4位儿茶酚、β位羟基、N-异丙基取代。",features:"N-异丙基→β受体选择性激动（β₁+β₂）；几乎无α效应。",use:"支气管哮喘、心脏骤停、房室传导阻滞。",tip:"异丙肾=N-异丙基→纯β激动。'异丙→β'。用于哮喘（β₂）和心脏（β₁）。"},
+    {name:"麻黄碱",en:"ephedrine",class:"拟肾上腺素药",struct:"母核：苯乙胺骨架。苯环无羟基（非儿茶酚）、β位羟基、N-甲基。含两个手性碳。",features:"非儿茶酚→不被COMT代谢，作用持久；可口服；混合作用（直接+间接促释放）。",use:"鼻塞（减充血）、低血压、哮喘预防。",tip:"麻黄碱=无儿茶酚+β-OH+N-CH₃。非儿茶酚→可口服、持久。中药麻黄来源。"},
+    {name:"普萘洛尔",en:"propranolol",class:"抗肾上腺素药·β受体阻断剂",struct:"母核：芳氧丙醇胺骨架（-O-CH₂-CH(OH)-CH₂-NH-R）。芳环为萘环，N-异丙基。",features:"芳氧丙醇胺比苯乙醇胺活性强；β位(R)构型→活性强；N-异丙基→非选择性β阻断。",use:"高血压、心绞痛、心律失常、甲亢辅助。",tip:"β阻断剂核心骨架=芳氧丙醇胺。N取代基决定选择性：异丙基/叔丁基→非选择，4-甲氧乙基→β₁选择（美托洛尔）。"},
+    {name:"美托洛尔",en:"metoprolol",class:"抗肾上腺素药·β₁受体阻断剂",struct:"母核：芳氧丙醇胺。芳环为4-甲氧乙基苯基，N-异丙基。",features:"4位甲氧乙基→β₁受体选择性；对β₂影响小→不影响支气管。",use:"高血压、心绞痛、心力衰竭、心律失常。",tip:"美托洛尔=芳氧丙醇胺+4-甲氧乙基→β₁选择。哮喘患者相对安全。'洛尔'后缀。"},
+    {name:"雷尼替丁",en:"ranitidine",class:"抗组胺药·H₂受体阻断剂",struct:"母核：呋喃环。含：呋喃环+含硫侧链（硫醚）+硝基胍基（不是咪唑）。",features:"呋喃环（非咪唑）→H₂选择性；硝基胍→活性基团；含硫侧链。",use:"胃溃疡、十二指肠溃疡、反流性食管炎。",tip:"雷尼替丁vs西咪替丁：呋喃环替代咪唑环→H₂选择性更高，抗雄激素副作用减少。'替丁'后缀。"},
+    {name:"氯苯那敏",en:"chlorpheniramine",class:"抗组胺药·H₁受体阻断剂",struct:"母核：丙胺类。含：对氯苄基+吡啶环+二甲氨基（叔胺）。",features:"对氯苄基+吡啶→H₁受体阻断；叔胺→可透过血脑屏障（有嗜睡）。",use:"过敏性鼻炎、荨麻疹、皮肤过敏。",tip:"氯苯那敏=对氯苄基+吡啶+二甲氨基。经典H₁阻断剂（第一代），有中枢镇静。'那敏/苯那敏'。"}
   ]},
   {cat:"心血管系统药物",items:[
-    {name:"硝苯地平",class:"钙通道阻滞剂·二氢吡啶类",struct:"母核：1,4-二氢吡啶环。3,5位双甲酸酯、4位邻硝基苯基、2,6位双甲基取代。",features:"4位邻硝基苯基→活性必需（间位/对位无活性）；3,5位双酯基→活性必需；二氢吡啶环不可氧化为吡啶。",use:"高血压、心绞痛（变异型首选）。",tip:"二氢吡啶类（DHP）核心：1,4-二氢吡啶+4位邻硝基苯基+3,5位双酯。'地平'类后缀。氨氯地平2位换氨基乙氧甲基→长效。"},
-    {name:"卡托普利",class:"ACE抑制剂",struct:"母核：脯氨酸衍生物。含巯基（-SH）的酰基氨基酸，巯基与酶活性中心Zn²⁺结合。",features:"巯基→与ACE活性中心Zn²⁺配位结合，但易引起皮疹/味觉障碍；羧基→与酶Arg结合；L-脯氨酸→必需。",use:"高血压、心力衰竭、糖尿病肾病保护。",tip:"ACE抑制剂三大药效团：巯基/羧基（与Zn结合）+ 疏水侧链。卡托普利含巯基→短效+副作用多。依那普利前药不含巯基（换膦酸基/羧基）→长效。'-普利'后缀。"},
-    {name:"洛伐他汀",class:"调血脂药·HMG-CoA还原酶抑制剂",struct:"母核：六氢萘环（十氢萘）稠合内酯环（六元δ-内酯）。含甲基丁酰侧链。",features:"内酯环为前药形式，体内水解为开环β-羟基酸→活性形式；六氢萘→疏水结合；2-甲基丁酰侧链→与酶活性口袋结合。",use:"高胆固醇血症、动脉粥样硬化预防。",tip:"他汀类核心：内酯环（前药）→体内水解为开环酸（活性形式）。'六氢萘+内酯'是洛伐他汀特征。辛伐他汀侧链多一个甲基→更强。氟伐他汀用吲哚替代萘环→全合成。"}
+    {name:"硝苯地平",en:"nifedipine",class:"钙通道阻滞剂·二氢吡啶类",struct:"母核：1,4-二氢吡啶环。3,5位双甲酸酯、4位邻硝基苯基、2,6位双甲基。",features:"4位邻硝基苯基→活性必需；3,5位双酯→必需；二氢吡啶不可氧化。",use:"高血压、心绞痛（变异型首选）。",tip:"DHP核心：1,4-二氢吡啶+4位邻硝基苯基+3,5位双酯。'地平'后缀。氨氯地平2位换氨基乙氧甲基→长效。"},
+    {name:"氨氯地平",en:"amlodipine",class:"钙通道阻滞剂·二氢吡啶类",struct:"母核：1,4-二氢吡啶环。2位氨基乙氧甲基（特征取代）、3位乙氧羰基、5位甲酸甲酯、4位邻氯苯基。",features:"2位氨基乙氧甲基→增加亲水性/组织亲和力→长效；4位邻氯苯基（非硝基）。",use:"高血压、稳定型心绞痛。",tip:"氨氯地平=硝苯地平改良：2位加氨基乙氧甲基→长效（一天一次）。'地平'类长效代表。"},
+    {name:"卡托普利",en:"captopril",class:"ACE抑制剂",struct:"母核：脯氨酸衍生物。含巯基（-SH）的酰基氨基酸，巯基与酶Zn²⁺结合。",features:"巯基→与ACE活性中心Zn²⁺配位结合；但易引起皮疹/味觉障碍；L-脯氨酸必需。",use:"高血压、心力衰竭、糖尿病肾病保护。",tip:"ACE抑制剂药效团：巯基（与Zn结合）。卡托普利含巯基→短效+副作用多。'-普利'后缀。"},
+    {name:"依那普利",en:"enalapril",class:"ACE抑制剂（前药）",struct:"母核：脯氨酸衍生物。不含巯基，含羧基（与Zn结合）；为乙酯前药（体内水解为依那普利拉）。",features:"羧基替代巯基→副作用减少；乙酯前药→口服吸收好，体内水解为活性形式（依那普利拉）；长效。",use:"高血压、心力衰竭。",tip:"依那普利=前药（乙酯）→体内水解为依那普利拉（活性）。不含巯基→长效+副作用少。"},
+    {name:"氯沙坦",en:"losartan",class:"血管紧张素Ⅱ受体阻断剂(ARB)",struct:"母核：联苯四唑。含：2-丁基-4-氯-1-[[2'-(1H-四唑-5-基)联苯-4-基]甲基]咪唑-5-甲醇。",features:"联苯四唑→AT₁受体阻断；咪唑环→活性核心；四唑基→增强亲和力/酸性。",use:"高血压、心力衰竭、糖尿病肾病（不引起干咳）。",tip:"ARB='沙坦'类。联苯四唑+咪唑是核心。与ACE抑制剂不同：不抑制缓激肽降解→无干咳副作用。"},
+    {name:"洛伐他汀",en:"lovastatin",class:"调血脂药·HMG-CoA还原酶抑制剂",struct:"母核：六氢萘稠合六元δ-内酯环。含2-甲基丁酰侧链。",features:"内酯环为前药→体内水解为开环β-羟基酸（活性形式）；六氢萘→疏水结合。",use:"高胆固醇血症、动脉粥样硬化预防。",tip:"他汀类核心：内酯（前药）→开环酸（活性）。'六氢萘+内酯'=洛伐他汀。辛伐他汀侧链多一甲基→更强。"},
+    {name:"辛伐他汀",en:"simvastatin",class:"调血脂药·HMG-CoA还原酶抑制剂",struct:"母核：六氢萘稠合六元内酯环。与洛伐他汀区别：2-甲基丁酰侧链多一个甲基（2,2-二甲基丁酸酯）。",features:"侧链多一个甲基→亲脂性增强→活性增强；仍为前药（内酯→开环酸）。",use:"高胆固醇血症、冠心病预防。",tip:"辛伐他汀=洛伐他汀+侧链多一甲基→更强。半合成他汀。'他汀'后缀。"},
+    {name:"氟伐他汀",en:"fluvastatin",class:"调血脂药·HMG-CoA还原酶抑制剂",struct:"母核：吲哚环（非六氢萘）。含：3,5-二羟基庚酸侧链（开环活性形式，非前药）。",features:"吲哚替代六氢萘→全合成；开环酸形式→直接活性（非前药）；氟苯基取代。",use:"高胆固醇血症。",tip:"氟伐他汀=全合成他汀：吲哚环+开环酸（非前药）。与洛伐他汀（天然/半合成前药）区别。"},
+    {name:"普鲁卡因胺",en:"procainamide",class:"抗心律失常药·Ⅰa类",struct:"母核：对氨基苯甲酰胺。含：对氨基苯甲酸+二乙氨基乙胺（酰胺键连接）。",features:"对位氨基→必需；酰胺键（非酯键，区别于普鲁卡因）；二乙氨基。",use:"室性心律失常（室早、室速）。",tip:"普鲁卡因胺vs普鲁卡因：酰胺键替代酯键→不易被酯酶水解，作用持久。Ⅰa类钠通道阻滞剂。"},
+    {name:"胺碘酮",en:"amiodarone",class:"抗心律失常药·Ⅲ类",struct:"母核：苯并呋喃环。含：2-丁基-3-(3,5-二碘-4-羟基苯甲酰基)苯并呋喃，侧链含二乙氨基乙基。",features:"苯并呋喃+两个碘原子→钾通道阻滞（延长复极）；含碘→影响甲状腺功能。",use:"室性/室上性心律失常（广谱）。",tip:"胺碘酮=苯并呋喃+双碘。Ⅲ类（钾通道阻滞）。含碘→甲状腺功能异常副作用。广谱抗心律失常。"},
+    {name:"硝酸甘油",en:"nitroglycerin",class:"抗心绞痛药·硝酸酯类",struct:"母核：甘油三硝酸酯。1,2,3-丙三醇三硝酸酯（三个-ONO₂基团）。",features:"硝酸酯基（-ONO₂）→体内释放NO→血管平滑肌松弛；含3个酯基。",use:"心绞痛急性发作（舌下含服）、心力衰竭。",tip:"硝酸甘油=丙三醇+3个硝酸酯基。释放NO→扩血管（静脉>动脉）→降低心肌耗氧。舌下含服起效快。"},
+    {name:"地高辛",en:"digoxin",class:"强心药·强心苷类",struct:"母核：甾体母核+不饱和内酯环（α,β-不饱和γ-内酯）+糖基（三分子洋地黄毒糖）。C14位β-OH，C17位不饱和内酯。",features:"C17位不饱和内酯环→强心活性必需；甾体C/D顺式稠合；糖基增强水溶性。",use:"心力衰竭、心房颤动/心房扑动（控制心室率）。",tip:"强心苷核心：甾体+C17不饱和内酯+糖基。C14-β-OH是活性必需。中毒剂量与治疗剂量接近→需监测血药浓度。"}
   ]},
   {cat:"抗菌药物",items:[
-    {name:"青霉素G",class:"β-内酰胺类抗生素",struct:"母核：青霉烷（β-内酰胺环稠合五元噻唑烷环）。6位含青霉烷酸母核（6-APA），侧链为苄基（-CH₂C₆H₅）。",features:"β-内酰胺环（四元酰胺环）→活性必需，开环失活；6位侧链可改造（半合成）；3位羧基→成盐改善溶解性；母核含S。",use:"革兰阳性菌感染、梅毒、链球菌感染。",tip:"青霉素核心：β-内酰胺+噻唑烷稠合。6-APA是母核。问题：①不耐酸（胃酸破坏）；②不耐酶（β-内酰胺酶水解）；③过敏。改良：侧链引入吸电子基（氨苄西林）→耐酸；大体积侧链（苯唑西林）→耐酶。"},
-    {name:"头孢氨苄",class:"β-内酰胺类·头孢菌素",struct:"母核：头孢烯（β-内酰胺环稠合六元双氢噻嗪环）。7位含氨基头孢烷酸母核（7-ACA），3位甲基、7位侧链为苯甘氨酸。",features:"六元双氢噻嗪环比五元噻唑烷更稳定→耐酸性增强；7位侧链决定抗菌谱；3位乙酰氧甲基→可被代谢。",use:"革兰阳性/阴性菌感染（呼吸道、泌尿道、皮肤）。",tip:"头孢菌素核心：β-内酰胺+双氢噻嗪（六元环）稠合，比青霉素稳定。7-ACA是母核。1/2/3/4代抗菌谱递增（G⁻增强、G⁺减弱）。'头孢'前缀。"},
-    {name:"环丙沙星",class:"喹诺酮类抗菌药",struct:"母核：4-喹诺酮（1,4-二氢-4-氧代喹啉-3-羧酸）。6位氟、7位哌嗪基、1位环丙基取代。",features:"6位F→增强DNA促旋酶亲和力+细胞穿透；7位哌嗪→扩大抗菌谱（尤其G⁻）；1位环丙基→增强活性；3位羧基+4位酮基→活性必需（与DNA促旋酶结合）。",use:"泌尿生殖道、呼吸道、肠道、皮肤软组织感染（G⁻为主）。",tip:"氟喹诺酮核心：4-喹诺酮骨架+6位F+7位哌嗪。3位羧基4位酮基是活性必需基团。1位环丙基（环丙沙星）→最强。'沙星'后缀。注意：可影响软骨发育，儿童孕妇慎用。"},
-    {name:"磺胺甲噁唑",class:"磺胺类抗菌药",struct:"母核：对氨基苯磺酰胺（苯环对位-NH₂和-SO₂NH₂）。N1位杂环（异噁唑）取代。",features:"对位游离氨基→必需活性基团（与PABA结构相似）；N1杂环取代→增强活性/改变药代；磺酰胺基→必需。",use:"泌尿道、呼吸道感染（常与甲氧苄啶TMP合用→协同增效）。",tip:"磺胺类核心：对氨基苯磺酰胺。PABA类似物→竞争抑制二氢叶酸合成酶。对位游离-NH₂是必需基团（N4被取代→前药如柳氮磺胺）。与TMP（抑制二氢叶酸还原酶）合用→双重阻断叶酸代谢。"}
+    {name:"青霉素G",en:"benzylpenicillin",class:"β-内酰胺类·青霉素",struct:"母核：青霉烷（β-内酰胺环稠合五元噻唑烷环）。6-APA母核，侧链为苄基。",features:"β-内酰胺环→活性必需，开环失活；6位侧链可改造；不耐酸、不耐酶、过敏。",use:"革兰阳性菌感染、梅毒、链球菌感染。",tip:"青霉素核心：β-内酰胺+噻唑烷。6-APA是母核。三大问题：不耐酸/不耐酶/过敏。侧链改造→半合成青霉素。"},
+    {name:"氨苄西林",en:"ampicillin",class:"β-内酰胺类·半合成青霉素",struct:"母核：6-APA。侧链为D-苯甘氨酸（含氨基）。侧链引入NH₂→耐酸。",features:"侧链氨基（α-氨基）→耐酸（可口服）；广谱（G⁺和G⁻）；但仍不耐酶。",use:"呼吸道/泌尿道/肠道感染（广谱）。",tip:"氨苄西林=6-APA+苯甘氨酸侧链（含NH₂）→耐酸+广谱。阿莫西林=对羟基氨苄西林→口服吸收更好。"},
+    {name:"阿莫西林",en:"amoxicillin",class:"β-内酰胺类·半合成青霉素",struct:"母核：6-APA。侧链为对羟基苯甘氨酸（比氨苄西林多对位羟基）。",features:"对位羟基→口服吸收更好；广谱（同氨苄西林）；不耐酶。",use:"呼吸道/泌尿道/消化道感染（幽门螺杆菌根除）。",tip:"阿莫西林=氨苄西林+对位羟基→口服吸收更好。常与克拉维酸合用→耐酶（奥格门汀）。"},
+    {name:"头孢氨苄",en:"cephalexin",class:"β-内酰胺类·头孢菌素（第一代）",struct:"母核：头孢烯（β-内酰胺环稠合六元双氢噻嗪环）。7-ACA母核，3位甲基、7位苯甘氨酸侧链。",features:"六元双氢噻嗪环比五元噻唑烷更稳定→耐酸；7位侧链决定抗菌谱。",use:"革兰阳性/阴性菌感染（呼吸道、泌尿道、皮肤）。",tip:"头孢菌素核心：β-内酰胺+双氢噻嗪（六元环）→比青霉素稳定。7-ACA是母核。'头孢'前缀。"},
+    {name:"头孢曲松",en:"ceftriaxone",class:"β-内酰胺类·头孢菌素（第三代）",struct:"母核：7-ACA。3位三嗪二酮侧链、7位氨基噻唑肟基侧链。",features:"7位氨基噻唑+甲氧肟基→对β-内酰胺酶稳定+G⁻活性强；3位三嗪二酮→长效。",use:"严重感染（脑膜炎、败血症）、淋病。",tip:"第三代头孢特征：7位氨基噻唑肟基→抗β-内酰胺酶+G⁻增强。头孢曲松3位三嗪二酮→半衰期长（一天一次）。"},
+    {name:"环丙沙星",en:"ciprofloxacin",class:"喹诺酮类抗菌药",struct:"母核：4-喹诺酮（1,4-二氢-4-氧代喹啉-3-羧酸）。6位氟、7位哌嗪基、1位环丙基。",features:"6位F→增强DNA促旋酶亲和力+细胞穿透；7位哌嗪→扩大抗菌谱（G⁻）；1位环丙基→增强活性。",use:"泌尿生殖道、呼吸道、肠道、皮肤软组织感染（G⁻为主）。",tip:"氟喹诺酮核心：4-喹诺酮+6位F+7位哌嗪。3位羧基4位酮基=活性必需。1位环丙基→最强。'沙星'后缀。儿童孕妇慎用。"},
+    {name:"左氧氟沙星",en:"levofloxacin",class:"喹诺酮类抗菌药",struct:"母核：喹诺酮母核并入噁嗪环（三环）。含6位氟、7位哌嗪、8位氧（噁嗪环）。左旋光学异构体。",features:"噁嗪环并入→增强对G⁺活性+减少光毒性；左旋体活性强（消旋体的氧氟沙星的两倍）。",use:"呼吸道感染（社区获得性肺炎）、泌尿道感染。",tip:"左氧氟沙星=氧氟沙星的左旋体（活性强一倍）。含噁嗪环→增强G⁺活性。呼吸喹诺酮代表。"},
+    {name:"磺胺甲噁唑",en:"sulfamethoxazole",class:"磺胺类抗菌药",struct:"母核：对氨基苯磺酰胺。N1位异噁唑环取代。对位游离氨基。",features:"对位游离氨基→必需（PABA类似物）；N1杂环取代→增强活性；竞争抑制二氢叶酸合成酶。",use:"泌尿道、呼吸道感染（常与TMP合用→协同增效）。",tip:"磺胺核心：对氨基苯磺酰胺。PABA类似物→抑制二氢叶酸合成酶。对位-NH₂必需。与TMP合用→双重阻断叶酸代谢。"},
+    {name:"异烟肼",en:"isoniazid",class:"抗结核药",struct:"母核：吡啶-4-甲酰肼（异烟酸肼）。吡啶环4位连接酰肼基（-CONHNH₂）。",features:"吡啶环+酰肼基→抗结核活性；肼基→与分枝菌酸合成酶结合（抑制细胞壁合成）。",use:"各型结核病（一线用药）。",tip:"异烟肼=异烟酸+酰肼。抗结核一线。抑制分枝菌酸合成→破坏结核杆菌细胞壁。肝毒性需监测。"},
+    {name:"利福平",en:"rifampin",class:"抗结核药",struct:"母核：利福霉素SV的大环内酰胺衍生物。含萘酚环+大环内酰胺桥+哌嗪亚胺甲基侧链。",features:"大环内酰胺结构→抑制DNA依赖性RNA聚合酶；哌嗪侧链→增强口服吸收；广谱（结核+麻风+G⁺）。",use:"结核病（一线）、麻风、耐药金葡菌感染。",tip:"利福平=利福霉素SV半合成衍生物。抑制RNA聚合酶→阻断转录。橙红色药物（尿液/泪液变红）。"},
+    {name:"甲氧苄啶",en:"trimethoprim",class:"二氢叶酸还原酶抑制剂",struct:"母核：2,4-二氨基-5-(3,4,5-三甲氧基苄基)嘧啶。嘧啶环2,4位双氨基。",features:"2,4-二氨基嘧啶→抑制二氢叶酸还原酶（DHFR）；三甲氧基苄基→增强活性；与磺胺合用→双重阻断。",use:"泌尿道/呼吸道感染（常与SMZ合用=复方新诺明）。",tip:"TMP=二氨基嘧啶+三甲氧基苄基。抑制DHFR→阻断四氢叶酸合成。与磺胺（抑制二氢叶酸合成酶）合用→双重阻断→协同增效。"},
+    {name:"两性霉素B",en:"amphotericin B",class:"抗真菌药·多烯大环类",struct:"母核：大环内酯（37元环）。含7个共轭双键（七烯）+氨基糖（去氧氨基糖）+羧基。两性（氨基+羧基）。",features:"七烯大环→与真菌细胞膜麦角甾醇结合→形成孔道→漏出死亡；对哺乳动物胆固醇亲和力低（选择性）。",use:"深部真菌感染（隐球菌脑膜炎、念珠菌病）。",tip:"两性霉素B=大环+7个共轭双键（七烯）。与麦角甾醇结合→膜穿孔。广谱抗深部真菌。肾毒性大→需监测。"},
+    {name:"氟康唑",en:"fluconazole",class:"抗真菌药·唑类",struct:"母核：1,2,4-三唑。含：双三唑+2,4-二氟苯基-1,3-二醇丙烷骨架（两个三唑通过丙二醇连接）。",features:"三唑环→抑制细胞色素P450（羊毛甾醇14α-脱甲基酶）→阻断麦角甾醇合成；双氟苯基→增强活性；水溶性好可透过血脑屏障。",use:"念珠菌/隐球菌感染（含脑膜炎）。",tip:"唑类抗真菌=抑制麦角甾醇合成（P450 14α-脱甲基酶）。氟康唑=双三唑+双氟苯。可透过血脑屏障→治隐球菌脑膜炎。'康唑'后缀。"},
+    {name:"阿昔洛韦",en:"acyclovir",class:"抗病毒药·核苷类似物",struct:"母核：鸟嘌呤核苷类似物。9-[(2-羟基乙氧基)甲基]鸟嘌呤（无环糖替代物）。",features:"鸟嘌呤+无环侧链→在病毒感染的细胞中被病毒胸苷激酶磷酸化为三磷酸形式→掺入DNA链终止延伸；对未感染细胞毒性低（选择性）。",use:"单纯疱疹病毒(HSV)、水痘-带状疱疹病毒(VZV)感染。",tip:"阿昔洛韦=鸟嘌呤+无环侧链。前药（需病毒TK磷酸化激活）→选择性高。'洛韦'后缀=核苷类抗病毒。"},
+    {name:"利巴韦林",en:"ribavirin",class:"抗病毒药·核苷类似物",struct:"母核：1-β-D-呋喃核糖基-1H-1,2,4-三氮唑-3-甲酰胺。嘌呤/嘧啶的类似物（三氮唑碱基+核糖）。",features:"三氮唑核苷→抑制IMP脱氢酶+RNA聚合酶；广谱抗病毒。",use:"呼吸道合胞病毒(RSV)、丙肝（与干扰素合用）、流行性出血热。",tip:"利巴韦林=三氮唑核苷。广谱抗病毒（RNA+DNA病毒）。'韦林'后缀。孕妇禁用（致畸）。"}
   ]},
   {cat:"抗肿瘤药物",items:[
-    {name:"环磷酰胺",class:"烷化剂·氮芥类",struct:"母核：氮芥（双β-氯乙基氨基）。N上连接含磷酰胺基的环状侧链。",features:"氮芥基团→在体内经酶活化生成乙撑亚胺离子→DNA交联；磷酰胺环→前药设计，体外无活性，肿瘤细胞磷酰胺酶活性高→选择性活化。",use:"淋巴瘤、白血病、乳腺癌、卵巢癌（广谱）。",tip:"氮芥类核心：N(CH₂CH₂Cl)₂。环磷酰胺是前药设计典范：磷酰胺基作为'运输基团'，依赖肿瘤细胞磷酰胺酶选择性活化，降低对正常细胞毒性。"},
-    {name:"氟尿嘧啶",class:"抗代谢药·嘧啶拮抗剂",struct:"母核：尿嘧啶。5位H被F取代（5-氟尿嘧啶，5-FU）。",features:"5位F→与尿嘧啶结构相似（生物电子等排体）→掺入RNA/抑制dTMP合成酶；F-C键牢固不易断裂→伪代谢物。",use:"消化道肿瘤、乳腺癌、头颈部肿瘤（广谱）。",tip:"抗代谢药=伪代谢物。5-FU用F替代5位H：①尿嘧啶→抑制dTMP合成（阻断DNA合成）；②F掺入RNA→干扰RNA功能。'尿嘧啶5位F'是关键记忆点。"},
-    {name:"顺铂",class:"金属配合物·铂类",struct:"中心铂离子(Pt²⁺) + 两个氯离子（离去基团）+ 两个氨基（载体基团），平面四边形构型。",features:"顺式构型→活性必需（反式无活性）；Cl⁻在低Cl⁻环境中（细胞内）被水取代→活化；与DNA鸟嘌呤N7位交联→阻断复制。",use:"睾丸癌、卵巢癌、膀胱癌、肺癌。",tip:"顺铂核心：顺式-[Pt(NH₃)₂Cl₂]。'顺式有效、反式无效'。两个NH₃是载体基团（识别DNA），两个Cl是离去基团（体内水取代活化）。第二三代（卡铂、奥沙利铂）改良离去基团→减毒。"}
+    {name:"环磷酰胺",en:"cyclophosphamide",class:"烷化剂·氮芥类",struct:"母核：氮芥（双β-氯乙基氨基）。N上连接含磷酰胺基的环状侧链（前药设计）。",features:"氮芥基团→体内活化生成乙撑亚胺离子→DNA交联；磷酰胺环→前药（肿瘤磷酰胺酶活化→选择性）。",use:"淋巴瘤、白血病、乳腺癌、卵巢癌（广谱）。",tip:"氮芥核心：N(CH₂CH₂Cl)₂。环磷酰胺=前药典范：磷酰胺基作'运输基团'，肿瘤细胞选择性活化→减毒。"},
+    {name:"氟尿嘧啶",en:"fluorouracil",class:"抗代谢药·嘧啶拮抗剂",struct:"母核：尿嘧啶。5位H被F取代（5-FU）。F-C键牢固。",features:"5位F→与尿嘧啶结构相似（生物电子等排体）；抑制dTMP合成酶+掺入RNA；伪代谢物。",use:"消化道肿瘤、乳腺癌、头颈部肿瘤（广谱）。",tip:"5-FU=尿嘧啶5位F。①抑制dTMP合成酶→阻断DNA合成；②F掺入RNA→干扰RNA功能。'尿嘧啶5位F'关键记忆。"},
+    {name:"巯嘌呤",en:"mercaptopurine",class:"抗代谢药·嘌呤拮抗剂",struct:"母核：嘌呤。6位羟基被巯基（-SH）取代（6-巯基嘌呤，6-MP）。",features:"6位-SH→与次黄嘌呤结构相似；体内被HGPRT磷酸化为核苷酸→抑制嘌呤合成；掺入DNA/RNA。",use:"急性白血病（儿童急淋维持治疗）。",tip:"6-MP=嘌呤6位-OH→-SH。次黄嘌呤类似物→抑制嘌呤合成。黄嘌呤氧化酶代谢→与别嘌醇合用需减量。"},
+    {name:"甲氨蝶呤",en:"methotrexate",class:"抗代谢药·叶酸拮抗剂",struct:"母核：叶酸类似物。含：蝶啶环+对氨基苯甲酸+谷氨酸。4位OH被NH₂取代（氨基蝶呤衍生物）。",features:"4位氨基→与二氢叶酸还原酶(DHFR)亲和力比叶酸强1000倍；抑制四氢叶酸合成→阻断dTMP合成→阻断DNA合成。",use:"急性白血病、绒毛膜上皮癌、银屑病、类风湿性关节炎。",tip:"MTX=叶酸4位OH→NH₂。抑制DHFR→阻断四氢叶酸→阻断dTMP合成。救援剂：甲酰四氢叶酸（亚叶酸钙）挽救正常细胞。"},
+    {name:"顺铂",en:"cisplatin",class:"金属配合物·铂类",struct:"中心Pt²⁺ + 2个Cl⁻（离去基团）+ 2个NH₃（载体基团），顺式平面四边形。",features:"顺式构型→活性必需（反式无活性）；Cl⁻在低Cl⁻环境（细胞内）水取代→活化；与DNA鸟嘌呤N7位交联。",use:"睾丸癌、卵巢癌、膀胱癌、肺癌。",tip:"顺铂=顺式-[Pt(NH₃)₂Cl₂]。'顺式有效、反式无效'。2个NH₃=载体（识别DNA），2个Cl=离去基团（体内活化）。"},
+    {name:"卡铂",en:"carboplatin",class:"金属配合物·铂类（第二代）",struct:"母核：顺铂。2个Cl被1,1-环丁烷二羧酸（CBDCA）替代，仍为顺式构型。",features:"CBDCA替代Cl→稳定性增强、肾毒性/消化道反应降低；水溶性更好；骨髓抑制为主。",use:"卵巢癌、小细胞肺癌、头颈部肿瘤。",tip:"卡铂=顺铂+CBDCA替代Cl→第二代。减毒（肾毒性↓）但骨髓抑制↑。'铂'后缀。"},
+    {name:"紫杉醇",en:"paclitaxel",class:"抗肿瘤植物药·紫杉烷类",struct:"母核：紫杉烷三环二萜。含：四元氧杂环+酯侧链（N-苯甲酰-苯基异丝氨酸）、C13位酯侧链。",features:"紫杉烷骨架→促进微管蛋白聚合+稳定微管→阻止解聚→阻断有丝分裂；C13侧链→活性必需。",use:"卵巢癌、乳腺癌、非小细胞肺癌。",tip:"紫杉醇=紫杉烷二萜+C13酯侧链。作用独特：促进微管聚合（而非抑制）+稳定微管→阻断有丝分裂。天然来源（红豆杉树皮）。"},
+    {name:"多柔比星",en:"doxorubicin",class:"抗肿瘤抗生素·蒽环类",struct:"母核：蒽环（四环结构：A/B/C/D环）。含：蒽醌发色团+氨基糖（柔红糖胺）+侧链。C7位羟基、C9位侧链。",features:"蒽环平面结构→嵌入DNA碱基对间；氨基糖→增强DNA结合；抑制拓扑异构酶Ⅱ→DNA断裂；产生自由基。",use:"广谱：乳腺癌、白血病、淋巴瘤、肉瘤。",tip:"多柔比星(阿霉素)=蒽环+氨基糖。三重机制：①DNA嵌入 ②抑制TopoⅡ ③自由基。剂量限制性毒性：心脏毒性（蓄积）。"},
+    {name:"羟基脲",en:"hydroxyurea",class:"抗代谢药·核苷酸还原酶抑制剂",struct:"母核：尿素。一个氨基被羟基取代（N-羟基脲，HO-NH-CO-NH₂）。",features:"羟基→抑制核糖核苷酸还原酶→阻断DNA合成（S期特异性）；结构简单。",use:"慢性粒细胞白血病、真性红细胞增多症、镰状细胞贫血。",tip:"羟基脲=尿素+羟基取代。抑制核糖核苷酸还原酶→阻断DNA合成。S期特异性。结构最简单的抗代谢药之一。"},
+    {name:"他莫昔芬",en:"tamoxifen",class:"激素类抗肿瘤药·抗雌激素",struct:"母核：三苯乙烯骨架。含：1,2-二苯基-1-[4-(2-二甲氨基乙氧基)苯基]-1-丁烯（三苯乙烯+二甲氨基乙氧基侧链）。",features:"三苯乙烯骨架→雌激素受体拮抗剂（竞争性）；反式异构体活性强；C端侧链→必需。",use:"雌激素受体阳性(ER+)乳腺癌（内分泌治疗）。",tip:"他莫昔芬=三苯乙烯骨架。ER拮抗剂→用于ER+乳腺癌。前药（体内代谢为4-羟基他莫昔芬，活性强100倍）。'昔芬'后缀=抗雌激素。"}
+  ]},
+  {cat:"解热镇痛及非甾体抗炎药",items:[
+    {name:"阿司匹林",en:"aspirin",class:"解热镇痛药·水杨酸类",struct:"母核：水杨酸。羧基的邻位羟基被乙酰化（乙酰水杨酸）。",features:"乙酰化水杨酸→不可逆抑制COX（乙酰化Ser530）；解热镇痛+抗炎+抗血小板（小剂量）。",use:"解热镇痛、抗炎、抗血小板（心血管疾病预防）。",tip:"阿司匹林=水杨酸乙酰化。不可逆抑制COX→小剂量抗血小板（心血管预防）、大剂量抗炎。胃肠道刺激常见。"},
+    {name:"对乙酰氨基酚",en:"acetaminophen",class:"解热镇痛药·苯胺类",struct:"母核：对氨基苯酚。氨基被乙酰化（N-乙酰对氨基苯酚，扑热息痛）。",features:"对位羟基+乙酰氨基→解热镇痛（中枢COX抑制）；几乎无外周抗炎作用（不抑制外周COX）。",use:"发热、轻中度疼痛（头痛、关节痛）。",tip:"对乙酰氨基酚=对氨基苯酚乙酰化。解热镇痛但无抗炎（中枢COX为主）。过量→肝毒性（谷胱甘肽耗竭）。'扑热息痛'=paracetamol。"},
+    {name:"布洛芬",en:"ibuprofen",class:"非甾体抗炎药·丙酸类",struct:"母核：2-(4-异丁苯基)丙酸。苯环对位异丁基+α位甲基+羧基。",features:"对位异丁基+丙酸→抑制COX（可逆）；S(+)异构体活性强；解热镇痛抗炎。",use:"类风湿性关节炎、骨关节炎、发热、疼痛。",tip:"布洛芬=苯丙酸类。'布洛芬'='异丁苯丙酸'。COX非选择性抑制剂（COX-1/COX-2）。'芬'后缀=丙酸类NSAID。"},
+    {name:"吲哚美辛",en:"indomethacin",class:"非甾体抗炎药·吲哚乙酸类",struct:"母核：吲哚环。5位甲氧基、2位甲基、3位乙酸侧链、N-对氯苯甲酰基。",features:"吲哚乙酸骨架→抑制COX（强效）；5位甲氧基+N-对氯苯甲酰基→增强活性。",use:"类风湿性关节炎、强直性脊柱炎、急性痛风。",tip:"吲哚美辛=吲哚乙酸+对氯苯甲酰基。强效NSAID但副作用大（消化道/中枢）。'美辛'后缀。"},
+    {name:"双氯芬酸",en:"diclofenac",class:"非甾体抗炎药·苯乙酸类",struct:"母核：2-(2,6-二氯苯氨基)苯乙酸。邻位双氯苯基+氨基+乙酸侧链。",features:"2,6位双氯→增强COX抑制（尤其COX-2）；氨基连接苯环与乙酸；强效抗炎镇痛。",use:"类风湿性关节炎、骨关节炎、术后疼痛、痛经。",tip:"双氯芬酸=邻氨基苯乙酸+2,6-双氯。COX-2选择性较高。'芬酸'后缀=苯乙酸类NSAID。常用钠盐。"}
+  ]},
+  {cat:"维生素及激素类药物",items:[
+    {name:"维生素C",en:"ascorbic acid",class:"维生素·水溶性",struct:"母核：L-古洛糖酸的内酯（γ-内酯）。含：呋喃型内酯环+2,3位双键烯二醇（烯醇结构）。",features:"2,3位烯二醇→强还原性（抗氧化）；L-构型（天然）；内酯环。",use:"坏血病防治、抗氧化辅助、增强免疫。",tip:"VC=L-古洛糖酸内酯+2,3位烯二醇。烯二醇结构→强还原性→抗氧化。人体不能合成→必须从食物摄取。"},
+    {name:"维生素A",en:"retinol",class:"维生素·脂溶性",struct:"母核：全反式视黄醇。含：β-紫罗兰酮环（环己烯）+侧链（四个异戊二烯单位）+末端伯醇。",features:"全反式构型→活性形式；β-紫罗兰酮环+共轭多烯链→转化为视黄醛→参与视觉循环（视紫红质辅基）。",use:"夜盲症、干眼症、皮肤角化。",tip:"VA=β-紫罗兰酮环+多烯侧链+醇。体内氧化为视黄醛→参与视紫红质（暗视觉）。全反式活性最强。"},
+    {name:"氢化可的松",en:"hydrocortisone",class:"糖皮质激素",struct:"母核：甾体（孕甾烷骨架，C21）。含：4-烯-3-酮（α,β-不饱和酮）、11β-OH、17α-OH、21位羟基+20位酮基（二羟丙酮侧链）。",features:"11β-OH+17α-OH→糖皮质激素活性（抗炎/免疫抑制）；4-烯-3-酮+20-酮-21-羟基→活性必需。",use:"抗炎、免疫抑制、抗过敏、肾上腺皮质功能减退替代治疗。",tip:"糖皮质激素核心：甾体+11β-OH+17α-OH+4-烯-3-酮+二羟丙酮侧链。'可的松'=11位酮基（体内转化为11β-OH才活性）。"},
+    {name:"地塞米松",en:"dexamethasone",class:"糖皮质激素（合成）",struct:"母核：氢化可的松骨架。区别：9α-氟、16α-甲基、1,2位脱氢（双键）。",features:"9α-F→增强抗炎活性；16α-甲基→消除盐皮质激素作用（纯糖皮质激素）；1,2位双键→增强活性。",use:"抗炎（强效）、免疫抑制、抗休克、预防早产儿呼吸窘迫综合征。",tip:"地塞米松=氢化可的松+9α-F+16α-甲基+1,2位脱氢→强效+无盐皮质激素作用。'米松'后缀=含16α-甲基。"},
+    {name:"雌二醇",en:"estradiol",class:"雌激素",struct:"母核：雌甾烷（C18甾体，A环芳构化）。含：3位酚羟基、17β-OH；A环为苯环（芳香化）。",features:"A环芳构化+3位酚羟基→雌激素活性必需；17β-OH→活性最强；18碳甾体（无C19角甲基）。",use:"雌激素缺乏替代治疗、绝经综合征、骨质疏松预防。",tip:"雌激素核心：C18甾体+A环芳构化+3-OH+17β-OH。A环苯环+酚羟基是特征（区别于其他甾体）。"},
+    {name:"睾酮",en:"testosterone",class:"雄激素",struct:"母核：雄甾烷（C19甾体）。含：4-烯-3-酮（α,β-不饱和酮）、17β-OH；C19角甲基。",features:"4-烯-3-酮+17β-OH→雄激素活性；17β-OH构型→活性最强；C19角甲基。",use:"男性性功能减退替代治疗、再生障碍性贫血。",tip:"睾酮=C19甾体+4-烯-3-酮+17β-OH。'4-烯-3-酮'=雄激素活性必需基团。17位酯化→前药（丙酸睾酮，长效）。"},
+    {name:"胰岛素",en:"insulin",class:"降糖药·多肽类",struct:"母核：由A链（21个氨基酸）和B链（30个氨基酸）通过两个二硫键连接的蛋白质激素。含3个二硫键（2个链间+1个链内A链）。",features:"二硫键→维持空间构象（活性必需）；A链N端+B链C端→受体结合区；多肽→不能口服（注射给药）。",use:"1型糖尿病、2型糖尿病（口服药控制不佳时）、糖尿病急症。",tip:"胰岛素=AB双链+3个二硫键。多肽→不能口服（被蛋白酶分解）。二硫键维持构象→活性必需。人胰岛素=猪胰岛素差1个氨基酸（B30）。"}
   ]}
 ];
 
 function renderStructCard(){
   var catActive=0;
-  var flipIdx=-1; // 当前翻转的卡片索引
   $("main").innerHTML=
   '<div class="page active">'+
-    '<div class="card"><div class="card-title"><span class="dot"></span>药化结构式卡片</div><div style="font-size:12px;color:var(--text-2);line-height:1.6;margin-bottom:10px;">按浙大349考纲整理 · 覆盖五大类药物<br>点击卡片翻转查看结构特征 / 构效关系 / 临床用途 / 记忆要点</div></div>'+
+    '<div class="card"><div class="card-title"><span class="dot"></span>药化结构式卡片</div><div style="font-size:12px;color:var(--text-2);line-height:1.6;margin-bottom:10px;">按浙大349考纲完整整理 · 7大类50+药物<br>结构式来自PubChem数据库 · 点击卡片翻转查看构效关系/用途/记忆要点</div></div>'+
     '<div class="file-tabs" id="structTabs">'+
       STRUCT_CARDS.map(function(c,i){return '<div class="file-tab'+(i===0?" active":"")+'" data-cat="'+i+'">'+c.cat+' '+c.items.length+'</div>';}).join("")+
     '</div>'+
@@ -1390,37 +1449,52 @@ function renderStructCard(){
     var list=$("structList");
     var cat=STRUCT_CARDS[catActive];
     list.innerHTML=cat.items.map(function(it,i){
-      var idx=catActive+"_"+i;
-      return '<div class="struct-card" data-idx="'+idx+'" style="background:#fff;border-radius:14px;padding:16px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,.06);cursor:pointer;border-left:4px solid var(--m-lav-d);">'+
-        '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;">'+
-          '<div><div style="font-size:16px;font-weight:700;color:var(--text-1);">'+it.name+'</div><div style="font-size:11px;color:var(--m-lav-d);margin-top:2px;">'+it.class+'</div></div>'+
-          '<div style="font-size:11px;color:var(--text-3);background:var(--m-lav-l);padding:3px 8px;border-radius:10px;">点击翻转</div>'+
+      var imgUrl=PUBCHEM_IMG+encodeURIComponent(it.en)+"/PNG?image_size=300x300";
+      return '<div class="struct-card" style="background:#fff;border-radius:14px;padding:16px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,.06);border-left:4px solid var(--m-lav-d);">'+
+        '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;">'+
+          '<div><div style="font-size:16px;font-weight:700;color:var(--text-1);">'+it.name+'</div><div style="font-size:11px;color:var(--m-lav-d);margin-top:2px;">'+it.class+'</div><div style="font-size:10px;color:var(--text-3);margin-top:2px;">'+it.en+'</div></div>'+
+          '<div class="struct-flip-btn" style="font-size:11px;color:var(--text-3);background:var(--m-lav-l);padding:3px 8px;border-radius:10px;cursor:pointer;">点击翻转</div>'+
         '</div>'+
-        '<div class="struct-front">'+
-          '<div style="font-size:12px;color:var(--text-2);line-height:1.7;"><b style="color:var(--m-lav-d);">🔬 结构特征：</b><br>'+it.struct+'</div>'+
+        '<div style="display:flex;gap:12px;align-items:flex-start;">'+
+          '<div style="flex-shrink:0;width:140px;height:140px;background:var(--m-mint-l);border-radius:10px;display:flex;align-items:center;justify-content:center;overflow:hidden;">'+
+            '<img class="struct-img" src="'+imgUrl+'" alt="'+it.name+'结构式" loading="lazy" style="max-width:100%;max-height:100%;object-fit:contain;" '+
+            'onerror="this.style.display=\'none\';this.parentElement.innerHTML=\'<div style=\\\'font-size:11px;color:var(--text-3);text-align:center;padding:8px;\\\'>结构式加载失败<br>见文字描述</div>\'" />'+
+          '</div>'+
+          '<div class="struct-front" style="flex:1;min-width:0;">'+
+            '<div style="font-size:12px;color:var(--text-2);line-height:1.7;"><b style="color:var(--m-lav-d);">结构特征：</b><br>'+it.struct+'</div>'+
+          '</div>'+
         '</div>'+
-        '<div class="struct-back" style="display:none;">'+
-          '<div style="font-size:12px;color:var(--text-2);line-height:1.7;margin-bottom:6px;"><b style="color:var(--m-pink-d);">⚡ 构效关系：</b><br>'+it.features+'</div>'+
-          '<div style="font-size:12px;color:var(--text-2);line-height:1.7;margin-bottom:6px;"><b style="color:var(--m-mint-d);">💊 临床用途：</b>'+it.use+'</div>'+
-          '<div style="font-size:12px;color:var(--m-yellow-d);line-height:1.7;padding:8px 10px;background:var(--m-yellow-l);border-radius:8px;"><b>💡 记忆要点：</b><br>'+it.tip+'</div>'+
+        '<div class="struct-back" style="display:none;margin-top:4px;">'+
+          '<div style="font-size:12px;color:var(--text-2);line-height:1.7;margin-bottom:6px;"><b style="color:var(--m-pink-d);">构效关系：</b><br>'+it.features+'</div>'+
+          '<div style="font-size:12px;color:var(--text-2);line-height:1.7;margin-bottom:6px;"><b style="color:var(--m-mint-d);">临床用途：</b>'+it.use+'</div>'+
+          '<div style="font-size:12px;color:var(--m-yellow-d);line-height:1.7;padding:8px 10px;background:var(--m-yellow-l);border-radius:8px;"><b>记忆要点：</b><br>'+it.tip+'</div>'+
         '</div>'+
       '</div>';
     }).join("");
+    // 绑定翻转：点击翻转按钮切换 正面结构/背面构效
     var cards=list.querySelectorAll(".struct-card");
-    for(var i=0;i<cards.length;i++)cards[i].addEventListener("click",function(){
-      var front=this.querySelector(".struct-front");
-      var back=this.querySelector(".struct-back");
-      var hint=this.querySelector("[style*='点击翻转']");
-      if(front.style.display!=="none"){
-        front.style.display="none";
-        back.style.display="block";
-        if(hint)hint.textContent="点击返回";
-      }else{
-        front.style.display="block";
-        back.style.display="none";
-        if(hint)hint.textContent="点击翻转";
-      }
-    });
+    for(var i=0;i<cards.length;i++){
+      (function(card){
+        var flipBtn=card.querySelector(".struct-flip-btn");
+        flipBtn.addEventListener("click",function(e){
+          e.stopPropagation();
+          var front=card.querySelector(".struct-front");
+          var back=card.querySelector(".struct-back");
+          var imgBox=card.querySelector(".struct-img")?.parentElement;
+          if(back.style.display==="none"){
+            front.style.display="none";
+            back.style.display="block";
+            if(imgBox)imgBox.style.display="none";
+            flipBtn.textContent="点击返回";
+          }else{
+            front.style.display="block";
+            back.style.display="none";
+            if(imgBox)imgBox.style.display="flex";
+            flipBtn.textContent="点击翻转";
+          }
+        });
+      })(cards[i]);
+    }
   }
   renderList();
   var tabs=document.querySelectorAll("#structTabs .file-tab");
@@ -1546,28 +1620,91 @@ function renderMistakes(){
 }
 
 // 默写
-function renderRecite(){
-  loadData("reciteQuestions",[
+var DEFAULT_RECITE=[
     {id:"r1",subject:"药剂学",q:"简述片剂制备的湿法制粒工艺流程。"},
     {id:"r2",subject:"药剂学",q:"影响药物溶解度的因素有哪些？"},
     {id:"r3",subject:"药剂学",q:"简述固体分散体的概念及制备方法。"},
-    {id:"r4",subject:"药理学",q:"掌握β受体阻滞剂的药理作用及临床应用。"},
-    {id:"r5",subject:"药理学",q:"简述阿托品的作用机制及临床应用。"},
-    {id:"r6",subject:"药物化学",q:"举例说明前药原理及其在药物设计中的应用。"},
-    {id:"r7",subject:"药物化学",q:"掌握β-内酰胺类药物的化学性质和分类。"},
-    {id:"r8",subject:"药物分析学",q:"简述高效液相色谱法的基本原理。"},
-    {id:"r9",subject:"药物分析学",q:"掌握药物分析方法验证的内容。"},
-    {id:"r10",subject:"英语",q:"Write an essay on the importance of perseverance."},
-    {id:"r11",subject:"政治",q:"简述实践与认识的辩证关系。"}
-  ]).then(function(questions){
+    {id:"r4",subject:"药剂学",q:"简述脂质体的组成、结构及制备方法。"},
+    {id:"r5",subject:"药剂学",q:"论述缓控释制剂的释药原理及设计原则。"},
+    {id:"r6",subject:"药剂学",q:"简述药物胃肠道吸收的影响因素。"},
+    {id:"r7",subject:"药剂学",q:"简述表面活性剂的分类及其在药剂中的应用。"},
+    {id:"r8",subject:"药剂学",q:"简述注射剂的制备工艺流程及质量要求。"},
+    {id:"r9",subject:"药剂学",q:"论述生物药剂学分类系统(BCS)及其在制剂设计中的应用。"},
+    {id:"r10",subject:"药剂学",q:"简述微囊与微球的制备方法及特点。"},
+    {id:"r11",subject:"药理学",q:"掌握β受体阻滞剂的药理作用及临床应用。"},
+    {id:"r12",subject:"药理学",q:"简述阿托品的作用机制及临床应用。"},
+    {id:"r13",subject:"药理学",q:"论述氨基糖苷类抗生素的共同特点及不良反应。"},
+    {id:"r14",subject:"药理学",q:"简述钙通道阻滞剂的分类及药理作用。"},
+    {id:"r15",subject:"药理学",q:"论述糖皮质激素的药理作用、临床应用及不良反应。"},
+    {id:"r16",subject:"药理学",q:"简述血管紧张素转化酶抑制剂(ACEI)的作用机制及临床应用。"},
+    {id:"r17",subject:"药理学",q:"论述抗菌药物的作用机制及耐药性产生机制。"},
+    {id:"r18",subject:"药理学",q:"简述抗高血压药物的分类及代表药物。"},
+    {id:"r19",subject:"药理学",q:"论述阿片类镇痛药的作用机制、临床应用及成瘾性。"},
+    {id:"r20",subject:"药理学",q:"简述抗心律失常药物的分类（Vaughan-Williams分类法）及代表药物。"},
+    {id:"r21",subject:"药物化学",q:"举例说明前药原理及其在药物设计中的应用。"},
+    {id:"r22",subject:"药物化学",q:"掌握β-内酰胺类药物的化学性质和分类。"},
+    {id:"r23",subject:"药物化学",q:"论述喹诺酮类抗菌药的构效关系。"},
+    {id:"r24",subject:"药物化学",q:"简述苯二氮卓类药物的结构特征及构效关系。"},
+    {id:"r25",subject:"药物化学",q:"论述二氢吡啶类钙通道阻滞剂的构效关系。"},
+    {id:"r26",subject:"药物化学",q:"简述HMG-CoA还原酶抑制剂(他汀类)的结构特征及作用机制。"},
+    {id:"r27",subject:"药物化学",q:"论述烷化剂的结构类型及作用机制，举例说明。"},
+    {id:"r28",subject:"药物化学",q:"简述磺胺类药物的发现及其构效关系。"},
+    {id:"r29",subject:"药物化学",q:"论述抗代谢类抗肿瘤药的设计原理及代表药物。"},
+    {id:"r30",subject:"药物化学",q:"简述生物电子等排体的概念及在药物设计中的应用。"},
+    {id:"r31",subject:"药物分析学",q:"简述高效液相色谱法的基本原理。"},
+    {id:"r32",subject:"药物分析学",q:"掌握药物分析方法验证的内容及各项指标的要求。"},
+    {id:"r33",subject:"药物分析学",q:"论述HPLC内标法的原理及内标物选择原则。"},
+    {id:"r34",subject:"药物分析学",q:"简述药物中杂质检查的方法及杂质限量的计算。"},
+    {id:"r35",subject:"药物分析学",q:"论述紫外分光光度法测定药物含量的原理及方法（吸收系数法/对照品法）。"},
+    {id:"r36",subject:"药物分析学",q:"简述酸碱滴定法在药物含量测定中的应用。"},
+    {id:"r37",subject:"药物分析学",q:"论述药品质量标准的制定原则及内容。"},
+    {id:"r38",subject:"药物分析学",q:"简述体内药物分析的特点及常用方法。"},
+    {id:"r39",subject:"药物分析学",q:"论述色谱法（TLC/HPLC/GC）在药物分析中的应用及各自特点。"},
+    {id:"r40",subject:"药物分析学",q:"简述复方制剂分析的特点及含量测定方法。"},
+    {id:"r41",subject:"英语",q:"Write an essay on the importance of perseverance in pursuing graduate studies."},
+    {id:"r42",subject:"英语",q:"Write an essay discussing the role of pharmaceutical research in public health."},
+    {id:"r43",subject:"英语",q:"Translate the following into Chinese: Drug metabolism refers to the biochemical modification of pharmaceutical substances by living organisms, usually through specialized enzymatic systems."},
+    {id:"r44",subject:"英语",q:"Write an essay on how to balance academic research and clinical practice in pharmacy."},
+    {id:"r45",subject:"英语",q:"Write an essay discussing the ethical considerations in clinical trials of new drugs."},
+    {id:"r46",subject:"政治",q:"简述实践与认识的辩证关系。"},
+    {id:"r47",subject:"政治",q:"论述矛盾的普遍性与特殊性及其方法论意义。"},
+    {id:"r48",subject:"政治",q:"简述社会主义市场经济体制的基本特征。"},
+    {id:"r49",subject:"政治",q:"论述新发展理念的科学内涵及其相互关系。"},
+    {id:"r50",subject:"政治",q:"简述人民代表大会制度是我国的根本政治制度。"},
+    {id:"r51",subject:"政治",q:"论述全面依法治国的总目标及基本原则。"},
+    {id:"r52",subject:"政治",q:"简述社会主义核心价值观的基本内容及其意义。"}
+  ];
+function renderRecite(){
+  loadData("reciteQuestions",DEFAULT_RECITE).then(function(questions){
     loadData("reciteAnswers",{}).then(function(answers){
       var activeSubject="all";
+      var randomQ=null;
       $("main").innerHTML=
       '<div class="page active">'+
+        '<div class="card" style="background:linear-gradient(135deg,var(--m-lav-d),var(--m-pink-d));color:#fff;text-align:center;padding:18px;">'+
+          '<div style="font-size:15px;font-weight:700;margin-bottom:6px;">🎯 随机考我</div>'+
+          '<div id="randomQArea" style="min-height:40px;display:flex;align-items:center;justify-content:center;">'+
+            '<div style="font-size:13px;opacity:.9;">点击下方按钮，随机抽一道大题考考你</div>'+
+          '</div>'+
+          '<button id="randomQBtn" style="margin-top:10px;padding:8px 24px;border-radius:20px;font-size:13px;font-weight:600;background:#fff;color:var(--m-lav-d);border:none;">🎲 随机抽题</button>'+
+        '</div>'+
         '<div class="recite-add"><input type="text" id="reciteAddInput" placeholder="添加自定义大题..." /><select id="reciteAddSubject">'+SUBJECTS.map(function(s){return '<option value="'+s.name+'">'+s.name+'</option>';}).join("")+'</select><button id="reciteAddBtn">+</button></div>'+
-        '<div class="recite-subject-tabs" id="reciteTabs"><div class="recite-subject-tab active" data-s="all">全部</div>'+SUBJECTS.map(function(s){return '<div class="recite-subject-tab" data-s="'+s.name+'">'+s.name+'</div>';}).join("")+'</div>'+
+        '<div class="recite-subject-tabs" id="reciteTabs"><div class="recite-subject-tab active" data-s="all">全部 '+questions.length+'</div>'+SUBJECTS.map(function(s){var c=questions.filter(function(q){return q.subject===s.name;}).length;return '<div class="recite-subject-tab" data-s="'+s.name+'">'+s.name+' '+c+'</div>';}).join("")+'</div>'+
         '<div id="reciteList"></div>'+
       '</div>';
+
+      function showRandomQ(){
+        var pool=activeSubject==="all"?questions:questions.filter(function(q){return q.subject===activeSubject;});
+        if(pool.length===0){toast("当前筛选下没有题目");return;}
+        randomQ=pool[Math.floor(Math.random()*pool.length)];
+        $("randomQArea").innerHTML=
+          '<div style="font-size:14px;line-height:1.6;">'+
+            '<div style="display:inline-block;font-size:11px;background:rgba(255,255,255,.25);padding:2px 8px;border-radius:10px;margin-bottom:8px;">'+randomQ.subject+'</div>'+
+            '<div style="font-weight:600;">'+randomQ.q+'</div>'+
+            '<div style="margin-top:8px;font-size:11px;opacity:.8;">在下方题库中找到这道题默写答案 ↓</div>'+
+          '</div>';
+      }
+      $("randomQBtn").addEventListener("click",showRandomQ);
 
       function renderList(){
         var list=$("reciteList");
@@ -1575,14 +1712,15 @@ function renderRecite(){
         if(show.length===0){list.innerHTML='<div class="empty-state"><div class="es-icon">✍️</div><div class="es-text">暂无题目，添加一个吧</div></div>';return;}
         list.innerHTML=show.map(function(q){
           var ans=answers[q.id]||"";
-          return '<div class="recite-item"><div class="ri-q"><span class="ri-tag">'+q.subject+'</span>'+q.q+'</div><textarea placeholder="在此默写你的答案..." data-ans="'+q.id+'">'+ans+'</textarea><div class="ri-saved '+(ans?"show":"")+'">'+(ans?"已保存 ✓":"")+'</div><div class="ri-actions"><button class="ri-btn save" data-save="'+q.id+'">保存</button><button class="ri-btn" data-clear="'+q.id+'">清空</button><button class="ri-btn" data-del-q="'+q.id+'" style="margin-left:auto;color:var(--danger);">删除题</button></div></div>';
+          var isHighlight=randomQ&&q.id===randomQ.id;
+          return '<div class="recite-item'+(isHighlight?' style="border:2px solid var(--m-lav-d);box-shadow:0 0 12px rgba(163,148,212,.3);"':'')+'"><div class="ri-q"><span class="ri-tag">'+q.subject+'</span>'+q.q+(isHighlight?' <span style="color:var(--m-lav-d);font-size:11px;">← 当前考你</span>':'')+'</div><textarea placeholder="在此默写你的答案..." data-ans="'+q.id+'">'+ans+'</textarea><div class="ri-saved '+(ans?"show":"")+'">'+(ans?"已保存 ✓":"")+'</div><div class="ri-actions"><button class="ri-btn save" data-save="'+q.id+'">保存</button><button class="ri-btn" data-clear="'+q.id+'">清空</button><button class="ri-btn" data-del-q="'+q.id+'" style="margin-left:auto;color:var(--danger);">删除题</button></div></div>';
         }).join("");
         var svs=list.querySelectorAll("[data-save]");
         for(var i=0;i<svs.length;i++)svs[i].addEventListener("click",function(){
           var id=this.dataset.save;
           var ta=list.querySelector('[data-ans="'+id+'"]');
           answers[id]=ta.value;
-          saveData("reciteAnswers",answers).then(function(){toast("已保存");renderRecite();});
+          saveData("reciteAnswers",answers).then(function(){toast("已保存");renderList();});
         });
         var cls=list.querySelectorAll("[data-clear]");
         for(var i=0;i<cls.length;i++)cls[i].addEventListener("click",function(){
@@ -1590,7 +1728,7 @@ function renderRecite(){
           var ta=list.querySelector('[data-ans="'+id+'"]');
           ta.value="";
           delete answers[id];
-          saveData("reciteAnswers",answers).then(function(){toast("已清空");});
+          saveData("reciteAnswers",answers).then(function(){toast("已清空");renderList();});
         });
         var dqs=list.querySelectorAll("[data-del-q]");
         for(var i=0;i<dqs.length;i++)dqs[i].addEventListener("click",function(){
