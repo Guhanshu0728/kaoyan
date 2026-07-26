@@ -1624,6 +1624,26 @@ openDB().then(function(){
   renderNav();
   renderHome();
 });
+
+// 自动检测更新：每次打开检查是否有新版本，有则自动刷新
+(function(){
+  var CHECK_URL="https://api.github.com/repos/Guhanshu0728/kaoyan/commits/main";
+  var KEY="lastCommitSha";
+  loadData(KEY,"").then(function(savedSha){
+    fetch(CHECK_URL,{cache:"no-store"}).then(function(r){return r.json();}).then(function(d){
+      var latestSha=d.sha||"";
+      if(savedSha && latestSha && savedSha!==latestSha){
+        // 有新版本，清缓存并刷新
+        if("caches" in window){caches.keys().then(function(ks){ks.forEach(function(k){caches.delete(k);});});}
+        saveData(KEY,latestSha).then(function(){
+          location.reload(true);
+        });
+      }else if(latestSha){
+        saveData(KEY,latestSha);
+      }
+    }).catch(function(){});
+  });
+})();
 </script>
 </body>
 </html>
