@@ -1,0 +1,1622 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="format-detection" content="telephone=no">
+<title>考研工作台 · 浙大药学</title>
+<style>
+:root{
+  --m-pink:#f4b6c2;
+  --m-pink-d:#e89aa8;
+  --m-pink-l:#fde4ea;
+  --m-blue:#a8c8e8;
+  --m-blue-d:#7da8d4;
+  --m-blue-l:#dceaf7;
+  --m-mint:#a8dcc8;
+  --m-mint-d:#7cc4a8;
+  --m-mint-l:#d8f0e8;
+  --m-lav:#c5b6e8;
+  --m-lav-d:#a394d4;
+  --m-lav-l:#ebe4f7;
+  --m-yellow:#f7d99e;
+  --m-yellow-d:#e8c279;
+  --m-yellow-l:#fdf0d8;
+  --m-peach:#fcc4a8;
+  --m-peach-d:#f0a584;
+  --m-peach-l:#fde8dc;
+  --primary:#a8dcc8;
+  --primary-d:#7cc4a8;
+  --primary-l:#d8f0e8;
+  --accent:#f4b6c2;
+  --accent-d:#e89aa8;
+  --danger:#e88a8a;
+  --success:#8acca8;
+  --text-1:#4a4a5a;
+  --text-2:#7a7a8a;
+  --text-3:#aaaaba;
+  --bg:#f8f5fa;
+  --card:#ffffff;
+  --border:#eee8f0;
+  --shadow:0 4px 16px rgba(180,160,200,.10);
+  --shadow-lg:0 10px 30px rgba(180,160,200,.16);
+  --radius:20px;
+  --radius-sm:14px;
+  --radius-xs:10px;
+  --safe-top:env(safe-area-inset-top,0px);
+  --safe-bottom:env(safe-area-inset-bottom,0px);
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;overflow:hidden;}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","PingFang SC","Helvetica Neue",sans-serif;
+  background:var(--bg);
+  color:var(--text-1);
+  font-size:15px;
+  line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit;font-size:inherit;}
+input,textarea,select{font-family:inherit;font-size:inherit;color:inherit;}
+::-webkit-scrollbar{width:0;height:0;}
+img{max-width:100%;}
+
+#app{position:relative;width:100%;height:100vh;height:100dvh;overflow:hidden;}
+
+.topbar{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  height:calc(54px + var(--safe-top));
+  padding-top:var(--safe-top);
+  background:linear-gradient(135deg,var(--m-mint-d),var(--m-blue-d));
+  color:#fff;
+  display:flex;align-items:center;
+  padding-left:14px;padding-right:14px;
+  box-shadow:0 2px 12px rgba(124,196,168,.2);
+}
+.topbar .menu-btn{
+  width:38px;height:38px;
+  display:flex;align-items:center;justify-content:center;
+  border-radius:12px;transition:background .2s;
+}
+.topbar .menu-btn:active{background:rgba(255,255,255,.2);}
+.topbar .menu-btn svg{width:22px;height:22px;}
+.topbar .title{flex:1;text-align:center;font-size:16px;font-weight:600;letter-spacing:.3px;}
+.topbar .right-slot{width:38px;}
+
+.drawer-mask{
+  position:fixed;inset:0;z-index:200;
+  background:rgba(80,60,90,.35);
+  opacity:0;visibility:hidden;
+  transition:opacity .3s,visibility .3s;
+  backdrop-filter:blur(3px);
+}
+.drawer-mask.open{opacity:1;visibility:visible;}
+.drawer{
+  position:fixed;top:0;left:0;bottom:0;z-index:201;
+  width:270px;
+  background:linear-gradient(180deg,#fff,var(--m-mint-l));
+  color:var(--text-1);
+  transform:translateX(-100%);
+  transition:transform .32s cubic-bezier(.4,0,.2,1);
+  display:flex;flex-direction:column;
+  padding-top:var(--safe-top);
+  box-shadow:4px 0 30px rgba(0,0,0,.1);
+}
+.drawer.open{transform:translateX(0);}
+.drawer-header{
+  padding:26px 20px 16px;
+  background:linear-gradient(135deg,var(--m-mint-d),var(--m-blue-d));
+  color:#fff;
+  border-radius:0 0 24px 24px;
+  margin-bottom:8px;
+}
+.drawer-header .avatar{
+  width:50px;height:50px;border-radius:50%;
+  background:rgba(255,255,255,.25);
+  display:flex;align-items:center;justify-content:center;
+  font-size:22px;font-weight:700;
+  margin-bottom:10px;
+}
+.drawer-header .name{font-size:17px;font-weight:600;}
+.drawer-header .sub{font-size:12px;opacity:.9;margin-top:3px;}
+
+.drawer-nav{flex:1;overflow-y:auto;padding:8px 0 calc(16px + var(--safe-bottom));}
+.nav-group-title{
+  padding:12px 20px 6px;
+  font-size:11px;font-weight:700;
+  letter-spacing:1.5px;
+  color:var(--text-3);
+}
+.nav-item{
+  display:flex;align-items:center;gap:12px;
+  padding:12px 20px;
+  font-size:14px;
+  transition:background .15s;
+  position:relative;
+}
+.nav-item:active{background:var(--m-mint-l);}
+.nav-item.active{background:var(--m-mint-l);}
+.nav-item.active::before{
+  content:'';position:absolute;left:0;top:10px;bottom:10px;
+  width:3px;border-radius:0 3px 3px 0;background:var(--m-mint-d);
+}
+.nav-item .icon{width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:var(--m-mint-l);color:var(--m-mint-d);flex-shrink:0;}
+.nav-item .icon svg{width:18px;height:18px;}
+.nav-item.sub-item{padding-left:48px;font-size:13px;padding-top:9px;padding-bottom:9px;}
+.nav-item.sub-item .icon{width:28px;height:28px;border-radius:8px;font-size:12px;font-weight:600;}
+
+.main{
+  position:fixed;top:calc(54px + var(--safe-top));left:0;right:0;bottom:0;
+  overflow-y:auto;-webkit-overflow-scrolling:touch;
+}
+.page{display:none;padding:14px 12px calc(90px + var(--safe-bottom));}
+.page.active{display:block;animation:fadein .3s;}
+@keyframes fadein{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+
+.card{
+  background:var(--card);
+  border-radius:var(--radius);
+  padding:16px;
+  margin-bottom:12px;
+  box-shadow:var(--shadow);
+}
+.card-title{
+  font-size:15px;font-weight:600;
+  color:var(--text-1);
+  margin-bottom:12px;
+  display:flex;align-items:center;gap:8px;
+}
+.card-title .dot{width:4px;height:15px;border-radius:2px;background:var(--m-mint-d);}
+
+/* 首页 */
+.hero-card{
+  background:linear-gradient(135deg,var(--m-mint-d),var(--m-blue-d));
+  color:#fff;
+  border-radius:var(--radius);
+  padding:20px 18px;
+  margin-bottom:12px;
+  position:relative;overflow:hidden;
+  box-shadow:0 6px 20px rgba(124,196,168,.25);
+}
+.hero-card::after{
+  content:'';position:absolute;right:-30px;top:-30px;
+  width:130px;height:130px;border-radius:50%;
+  background:rgba(255,255,255,.12);
+}
+.hero-card .label{font-size:12px;opacity:.9;margin-bottom:4px;}
+.hero-card .countdown{font-size:40px;font-weight:700;line-height:1.1;}
+.hero-card .countdown .unit{font-size:15px;font-weight:500;opacity:.85;margin-left:4px;}
+.hero-card .exam-date{font-size:11px;opacity:.85;margin-top:6px;}
+.hero-card .target{font-size:12px;opacity:.95;margin-top:4px;font-weight:500;}
+.hero-card .progress-wrap{margin-top:12px;height:6px;border-radius:3px;background:rgba(255,255,255,.2);overflow:hidden;}
+.hero-card .progress-bar{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--m-yellow),#ffe4a8);}
+.hero-card .progress-text{font-size:11px;opacity:.9;margin-top:5px;}
+
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;}
+.stat-card{background:var(--card);border-radius:var(--radius-sm);padding:14px 12px;box-shadow:var(--shadow);text-align:center;}
+.stat-card .num{font-size:24px;font-weight:700;color:var(--m-blue-d);}
+.stat-card .lbl{font-size:11px;color:var(--text-2);margin-top:3px;}
+
+.quick-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:4px;}
+.quick-item{
+  background:var(--card);border-radius:var(--radius-sm);
+  padding:12px 4px;text-align:center;box-shadow:var(--shadow);
+  transition:transform .12s;
+}
+.quick-item:active{transform:scale(.95);}
+.quick-item .qi-icon{width:34px;height:34px;border-radius:10px;margin:0 auto 5px;display:flex;align-items:center;justify-content:center;}
+.quick-item .qi-icon svg{width:18px;height:18px;}
+.quick-item .qi-label{font-size:11px;color:var(--text-2);}
+
+.today-tasks-mini .task-item{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);}
+.today-tasks-mini .task-item:last-child{border-bottom:none;}
+.task-check{width:22px;height:22px;border-radius:50%;border:2px solid var(--m-mint);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s;}
+.task-check.done{background:var(--success);border-color:var(--success);}
+.task-check svg{display:none;width:13px;height:13px;color:#fff;}
+.task-check.done svg{display:block;}
+.task-item .t-name{flex:1;font-size:14px;}
+.task-item.done .t-name{text-decoration:line-through;color:var(--text-3);}
+.task-item .t-tag{font-size:11px;padding:2px 8px;border-radius:8px;background:var(--m-mint-l);color:var(--m-mint-d);}
+
+.subject-header{
+  display:flex;align-items:center;gap:14px;
+  border-radius:var(--radius);
+  padding:18px;margin-bottom:14px;color:#fff;
+}
+.subject-header .sh-icon{width:48px;height:48px;border-radius:14px;background:rgba(255,255,255,.25);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:600;}
+.subject-header .sh-info{flex:1;}
+.subject-header .sh-name{font-size:18px;font-weight:600;}
+.subject-header .sh-sub{font-size:12px;opacity:.9;margin-top:2px;}
+
+.upload-zone{
+  border:2px dashed var(--m-mint);
+  border-radius:var(--radius-sm);
+  padding:22px 16px;text-align:center;
+  background:var(--m-mint-l);
+  margin-bottom:12px;transition:all .2s;
+}
+.upload-zone:active{background:var(--m-mint);border-color:var(--m-mint-d);}
+.upload-zone .uz-icon{width:42px;height:42px;margin:0 auto 6px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;color:var(--m-mint-d);}
+.upload-zone .uz-icon svg{width:22px;height:22px;}
+.upload-zone .uz-text{font-size:14px;color:var(--text-1);font-weight:500;}
+.upload-zone .uz-hint{font-size:12px;color:var(--text-3);margin-top:3px;}
+
+.file-tabs{display:flex;gap:6px;margin-bottom:10px;overflow-x:auto;}
+.file-tab{padding:6px 14px;border-radius:18px;font-size:12px;font-weight:500;background:var(--card);color:var(--text-2);border:1px solid var(--border);white-space:nowrap;transition:all .2s;}
+.file-tab.active{background:var(--m-mint-d);color:#fff;border-color:var(--m-mint-d);}
+
+.file-list{list-style:none;}
+.file-item{display:flex;align-items:center;gap:10px;padding:12px;background:var(--card);border-radius:var(--radius-sm);margin-bottom:8px;box-shadow:var(--shadow);}
+.file-item .fi-icon{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;flex-shrink:0;}
+.file-item .fi-icon.pdf{background:var(--m-peach-l);color:var(--m-peach-d);}
+.file-item .fi-icon.video{background:var(--m-lav-l);color:var(--m-lav-d);}
+.file-item .fi-info{flex:1;min-width:0;}
+.file-item .fi-name{font-size:13px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.file-item .fi-meta{font-size:11px;color:var(--text-3);margin-top:2px;}
+.file-item .fi-actions{display:flex;gap:5px;}
+.file-item .fi-btn{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;background:var(--m-mint-l);color:var(--m-mint-d);}
+.file-item .fi-btn:active{background:var(--m-mint);}
+.file-item .fi-btn svg{width:16px;height:16px;}
+.file-item .fi-btn.del{color:var(--danger);background:var(--m-pink-l);}
+
+.empty-state{text-align:center;padding:28px 16px;color:var(--text-3);}
+.empty-state .es-icon{font-size:36px;margin-bottom:6px;opacity:.6;}
+.empty-state .es-text{font-size:13px;}
+
+/* 计划 */
+.plan-date{text-align:center;font-size:12px;color:var(--text-2);margin-bottom:12px;}
+.plan-add{display:flex;gap:6px;margin-bottom:12px;}
+.plan-add input{flex:1;padding:10px 12px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--card);font-size:14px;outline:none;}
+.plan-add input:focus{border-color:var(--m-mint-d);}
+.plan-add select{padding:10px 6px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--card);font-size:12px;color:var(--text-2);outline:none;}
+.plan-add button{width:40px;background:var(--m-mint-d);color:#fff;border-radius:var(--radius-sm);font-size:20px;display:flex;align-items:center;justify-content:center;}
+.plan-progress{display:flex;align-items:center;gap:10px;margin-bottom:12px;padding:14px;background:var(--m-mint-l);border-radius:var(--radius-sm);}
+.plan-progress .pp-circle{position:relative;width:46px;height:46px;flex-shrink:0;}
+.plan-progress .pp-circle svg{width:46px;height:46px;transform:rotate(-90deg);}
+.plan-progress .pp-circle .pp-num{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:var(--m-mint-d);}
+.plan-progress .pp-text{flex:1;}
+.plan-progress .pp-text .pt-main{font-size:13px;font-weight:500;}
+.plan-progress .pp-text .pt-sub{font-size:12px;color:var(--text-2);margin-top:2px;}
+.plan-item{display:flex;align-items:center;gap:10px;padding:13px;background:var(--card);border-radius:var(--radius-sm);margin-bottom:8px;box-shadow:var(--shadow);animation:slidein .25s;}
+@keyframes slidein{from{opacity:0;transform:translateX(-8px);}to{opacity:1;transform:translateX(0);}}
+.plan-item .pi-check{width:24px;height:24px;border-radius:50%;border:2px solid var(--m-mint);flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .2s;}
+.plan-item.done .pi-check{background:var(--success);border-color:var(--success);}
+.plan-item.done .pi-check svg{width:13px;height:13px;color:#fff;display:block;}
+.pi-check svg{display:none;}
+.plan-item .pi-content{flex:1;}
+.plan-item .pi-name{font-size:14px;}
+.plan-item.done .pi-name{text-decoration:line-through;color:var(--text-3);}
+.plan-item .pi-tag{display:inline-block;font-size:11px;padding:2px 7px;border-radius:8px;margin-top:3px;background:var(--m-mint-l);color:var(--m-mint-d);}
+.plan-item .pi-del{width:28px;height:28px;color:var(--text-3);display:flex;align-items:center;justify-content:center;}
+.plan-item .pi-del:active{color:var(--danger);}
+.plan-item .pi-del svg{width:16px;height:16px;}
+
+/* 番茄 */
+.pomodoro-wrap{text-align:center;padding:16px 0;}
+.pomo-mode-tabs{display:flex;gap:6px;justify-content:center;margin-bottom:18px;}
+.pomo-mode-tab{padding:6px 16px;border-radius:18px;font-size:12px;font-weight:500;background:var(--card);color:var(--text-2);box-shadow:var(--shadow);}
+.pomo-mode-tab.active{background:var(--m-mint-d);color:#fff;}
+.pomo-clock{width:210px;height:210px;margin:0 auto 20px;position:relative;}
+.pomo-clock svg{width:100%;height:100%;transform:rotate(-90deg);}
+.pomo-clock .pomo-ring-bg{fill:none;stroke:var(--m-mint-l);stroke-width:8;}
+.pomo-clock .pomo-ring{fill:none;stroke:var(--m-mint-d);stroke-width:8;stroke-linecap:round;transition:stroke-dashoffset .8s linear;}
+.pomo-clock .pomo-time{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.pomo-clock .pomo-time .pt-time{font-size:42px;font-weight:300;color:var(--text-1);letter-spacing:2px;}
+.pomo-clock .pomo-time .pt-label{font-size:12px;color:var(--text-3);margin-top:4px;}
+.pomo-controls{display:flex;gap:14px;justify-content:center;}
+.pomo-btn{width:54px;height:54px;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow-lg);transition:transform .15s;}
+.pomo-btn:active{transform:scale(.92);}
+.pomo-btn svg{width:22px;height:22px;}
+.pomo-btn.primary{background:var(--m-mint-d);color:#fff;}
+.pomo-btn.secondary{background:var(--card);color:var(--m-mint-d);}
+.pomo-stats{display:flex;justify-content:center;gap:28px;margin-top:20px;padding:14px;background:var(--m-mint-l);border-radius:var(--radius-sm);}
+.pomo-stat .ps-num{font-size:20px;font-weight:700;color:var(--m-mint-d);}
+.pomo-stat .ps-lbl{font-size:11px;color:var(--text-2);margin-top:2px;}
+
+/* 倒计时 */
+.countdown-big{text-align:center;padding:28px 18px;border-radius:var(--radius);color:#fff;margin-bottom:12px;position:relative;overflow:hidden;background:linear-gradient(135deg,var(--m-pink-d),var(--m-lav-d));}
+.countdown-big::after{content:'';position:absolute;right:-40px;bottom:-40px;width:150px;height:150px;border-radius:50%;background:rgba(255,255,255,.1);}
+.countdown-big .cb-label{font-size:13px;opacity:.9;margin-bottom:6px;}
+.countdown-big .cb-days{font-size:68px;font-weight:700;line-height:1;letter-spacing:2px;}
+.countdown-big .cb-unit{font-size:18px;font-weight:500;opacity:.85;}
+.countdown-big .cb-date{font-size:12px;opacity:.85;margin-top:8px;}
+.cd-detail-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px;}
+.cd-detail{background:var(--card);border-radius:var(--radius-sm);padding:14px 6px;text-align:center;box-shadow:var(--shadow);}
+.cd-detail .cd-num{font-size:22px;font-weight:700;color:var(--m-blue-d);}
+.cd-detail .cd-lbl{font-size:11px;color:var(--text-2);margin-top:3px;}
+.cd-milestones .ms-item{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--border);}
+.cd-milestones .ms-item:last-child{border-bottom:none;}
+.cd-milestones .ms-dot{width:10px;height:10px;border-radius:50%;background:var(--m-yellow-d);flex-shrink:0;}
+.cd-milestones .ms-item.passed .ms-dot{background:var(--success);}
+.cd-milestones .ms-item .ms-info{flex:1;}
+.cd-milestones .ms-item .ms-name{font-size:14px;font-weight:500;}
+.cd-milestones .ms-item .ms-date{font-size:12px;color:var(--text-3);}
+.cd-milestones .ms-item .ms-days{font-size:13px;font-weight:600;color:var(--m-mint-d);}
+
+/* 速算 */
+.calc-mode-tabs{display:flex;gap:6px;margin-bottom:12px;}
+.calc-mode-tab{flex:1;padding:9px;border-radius:var(--radius-sm);text-align:center;font-size:12px;font-weight:500;background:var(--card);color:var(--text-2);box-shadow:var(--shadow);}
+.calc-mode-tab.active{background:var(--m-mint-d);color:#fff;}
+.calc-card{background:var(--card);border-radius:var(--radius);padding:22px;box-shadow:var(--shadow);text-align:center;}
+.calc-question{font-size:38px;font-weight:700;color:var(--text-1);margin-bottom:18px;letter-spacing:2px;}
+.calc-input{width:100%;padding:13px;font-size:22px;text-align:center;border:2px solid var(--border);border-radius:var(--radius-sm);outline:none;margin-bottom:12px;transition:border-color .2s;}
+.calc-input:focus{border-color:var(--m-mint-d);}
+.calc-input.correct{border-color:var(--success);background:var(--m-mint-l);}
+.calc-input.wrong{border-color:var(--danger);background:var(--m-pink-l);}
+.calc-submit{width:100%;padding:13px;background:var(--m-mint-d);color:#fff;border-radius:var(--radius-sm);font-size:14px;font-weight:500;}
+.calc-stats-bar{display:flex;justify-content:space-around;margin-top:14px;padding:14px;background:var(--m-mint-l);border-radius:var(--radius-sm);}
+.calc-stat .cs-num{font-size:18px;font-weight:700;color:var(--m-mint-d);}
+.calc-stat .cs-lbl{font-size:11px;color:var(--text-2);margin-top:2px;}
+.calc-feedback{font-size:13px;margin-top:8px;min-height:18px;}
+.calc-feedback.right{color:var(--success);}
+.calc-feedback.wrong{color:var(--danger);}
+
+/* 默写 */
+.recite-subject-tabs{display:flex;gap:6px;margin-bottom:12px;overflow-x:auto;}
+.recite-subject-tab{padding:6px 13px;border-radius:16px;font-size:12px;white-space:nowrap;background:var(--card);color:var(--text-2);box-shadow:var(--shadow);}
+.recite-subject-tab.active{background:var(--m-mint-d);color:#fff;}
+.recite-item{background:var(--card);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow);margin-bottom:12px;}
+.recite-item .ri-q{font-size:14px;font-weight:500;color:var(--text-1);margin-bottom:10px;line-height:1.6;}
+.recite-item .ri-q .ri-tag{display:inline-block;font-size:11px;padding:2px 8px;border-radius:6px;background:var(--m-lav-l);color:var(--m-lav-d);margin-right:6px;vertical-align:middle;}
+.recite-item textarea{width:100%;min-height:90px;padding:11px;border:1px solid var(--border);border-radius:var(--radius-sm);outline:none;resize:vertical;font-size:13px;line-height:1.6;background:var(--m-mint-l);}
+.recite-item textarea:focus{border-color:var(--m-mint-d);background:#fff;}
+.recite-item .ri-actions{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;}
+.recite-item .ri-btn{padding:7px 14px;border-radius:var(--radius-xs);font-size:12px;font-weight:500;background:var(--m-mint-l);color:var(--m-mint-d);}
+.recite-item .ri-btn.save{background:var(--m-mint-d);color:#fff;}
+.recite-item .ri-saved{margin-top:6px;font-size:11px;color:var(--success);display:none;}
+.recite-item .ri-saved.show{display:block;}
+.recite-add{display:flex;gap:6px;margin-bottom:12px;}
+.recite-add input{flex:1;padding:10px 12px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--card);font-size:13px;outline:none;}
+.recite-add select{padding:10px 6px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--card);font-size:12px;outline:none;}
+.recite-add button{width:40px;background:var(--m-mint-d);color:#fff;border-radius:var(--radius-sm);font-size:20px;display:flex;align-items:center;justify-content:center;}
+
+/* 备忘录 */
+.memo-link-card{display:flex;align-items:center;gap:12px;padding:15px;background:linear-gradient(135deg,var(--m-blue-d),var(--m-lav-d));color:#fff;border-radius:var(--radius);margin-bottom:12px;box-shadow:0 4px 14px rgba(125,168,212,.25);}
+.memo-link-card .mlc-icon{width:40px;height:40px;border-radius:12px;background:rgba(255,255,255,.25);display:flex;align-items:center;justify-content:center;font-size:20px;}
+.memo-link-card .mlc-info{flex:1;}
+.memo-link-card .mlc-name{font-size:14px;font-weight:600;}
+.memo-link-card .mlc-url{font-size:11px;opacity:.85;margin-top:2px;}
+.memo-link-card .mlc-arrow{opacity:.7;}
+.memo-link-card .mlc-arrow svg{width:18px;height:18px;}
+.memo-item{background:var(--card);border-radius:var(--radius-sm);padding:13px;margin-bottom:8px;box-shadow:var(--shadow);}
+.memo-item .mi-cat{display:inline-block;font-size:11px;padding:2px 8px;border-radius:6px;background:var(--m-yellow-l);color:var(--m-yellow-d);margin-bottom:5px;}
+.memo-item .mi-title{font-size:14px;font-weight:500;}
+.memo-item .mi-content{font-size:12px;color:var(--text-2);margin-top:5px;line-height:1.5;}
+.memo-item .mi-date{font-size:11px;color:var(--text-3);margin-top:6px;}
+.memo-item .mi-del{float:right;color:var(--text-3);padding:2px;}
+.memo-item .mi-del svg{width:15px;height:15px;}
+.memo-add select,.memo-add input,.memo-add textarea{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--card);font-size:13px;outline:none;margin-bottom:7px;}
+.memo-add textarea{min-height:60px;resize:vertical;}
+.memo-add button{width:100%;padding:11px;background:var(--m-mint-d);color:#fff;border-radius:var(--radius-sm);font-size:14px;font-weight:500;}
+
+/* AI */
+.ai-messages{flex:1;overflow-y:auto;padding:4px 0;}
+.ai-msg{margin-bottom:12px;display:flex;gap:8px;animation:fadein .3s;}
+.ai-msg.user{flex-direction:row-reverse;}
+.ai-msg .am-avatar{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;flex-shrink:0;}
+.ai-msg.ai .am-avatar{background:var(--m-mint-d);color:#fff;}
+.ai-msg.user .am-avatar{background:var(--m-pink-d);color:#fff;}
+.ai-msg .am-bubble{max-width:78%;padding:11px 13px;border-radius:16px;font-size:13px;line-height:1.6;}
+.ai-msg.ai .am-bubble{background:var(--card);color:var(--text-1);border-top-left-radius:4px;box-shadow:var(--shadow);}
+.ai-msg.user .am-bubble{background:var(--m-mint-d);color:#fff;border-top-right-radius:4px;}
+.ai-input-bar{display:flex;gap:7px;padding:8px 0;border-top:1px solid var(--border);}
+.ai-input-bar input{flex:1;padding:10px 13px;border:1px solid var(--border);border-radius:20px;outline:none;font-size:13px;background:var(--card);}
+.ai-input-bar input:focus{border-color:var(--m-mint-d);}
+.ai-input-bar button{width:42px;height:42px;border-radius:50%;background:var(--m-mint-d);color:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.ai-input-bar button svg{width:18px;height:18px;}
+.ai-typing{display:flex;gap:4px;padding:3px 0;}
+.ai-typing span{width:6px;height:6px;border-radius:50%;background:var(--m-mint);animation:typing 1.2s infinite;}
+.ai-typing span:nth-child(2){animation-delay:.2s;}
+.ai-typing span:nth-child(3){animation-delay:.4s;}
+@keyframes typing{0%,60%,100%{opacity:.3;transform:translateY(0);}30%{opacity:1;transform:translateY(-3px);}}
+
+/* 查看器 */
+.viewer-mask{position:fixed;inset:0;z-index:300;background:rgba(0,0,0,.94);display:none;flex-direction:column;}
+.viewer-mask.open{display:flex;}
+.viewer-header{padding:calc(10px + var(--safe-top)) 12px 10px;display:flex;align-items:center;justify-content:space-between;color:#fff;}
+.viewer-header .vh-title{flex:1;font-size:13px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin:0 8px;}
+.viewer-header .vh-close{width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.12);color:#fff;display:flex;align-items:center;justify-content:center;font-size:18px;}
+.viewer-body{flex:1;overflow:auto;-webkit-overflow-scrolling:touch;}
+.viewer-body video{width:100%;height:100%;object-fit:contain;background:#000;}
+.viewer-body iframe{width:100%;height:100%;border:none;background:#fff;}
+
+.toast{position:fixed;bottom:calc(75px + var(--safe-bottom));left:50%;transform:translateX(-50%) translateY(16px);background:rgba(74,74,90,.93);color:#fff;padding:10px 20px;border-radius:22px;font-size:13px;z-index:400;opacity:0;visibility:hidden;transition:all .3s;max-width:80%;text-align:center;}
+.toast.show{opacity:1;visibility:visible;transform:translateX(-50%) translateY(0);}
+
+.bottom-bar{position:fixed;bottom:0;left:0;right:0;z-index:90;background:rgba(255,255,255,.92);backdrop-filter:blur(20px);border-top:1px solid var(--border);display:flex;padding:7px 0 calc(7px + var(--safe-bottom));}
+.bb-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;color:var(--text-3);font-size:10px;}
+.bb-item.active{color:var(--m-mint-d);}
+.bb-item svg{width:21px;height:21px;}
+
+.zju-info{background:linear-gradient(135deg,var(--m-blue-l),var(--m-mint-l));border-radius:var(--radius);padding:16px;margin-bottom:12px;}
+.zju-info .zi-row{display:flex;padding:6px 0;font-size:13px;border-bottom:1px solid rgba(255,255,255,.4);}
+.zju-info .zi-row:last-child{border-bottom:none;}
+.zju-info .zi-label{color:var(--text-2);width:80px;flex-shrink:0;}
+.zju-info .zi-val{color:var(--text-1);font-weight:500;flex:1;}
+
+@media(min-width:768px){
+  body{background:#e8e0ec;display:flex;justify-content:center;}
+  #app{max-width:460px;margin:0 auto;position:relative;box-shadow:0 0 40px rgba(0,0,0,.08);background:var(--bg);height:100vh;height:100dvh;}
+  .topbar,.bottom-bar{max-width:460px;left:50%;transform:translateX(-50%);}
+  .drawer{left:50%;transform:translateX(-460px);}
+  .drawer.open{transform:translateX(0);}
+  .main{left:50%;transform:translateX(-50%);max-width:460px;}
+}
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="topbar">
+    <div class="menu-btn" id="menuBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></div>
+    <div class="title" id="pageTitle">考研工作台</div>
+    <div class="right-slot"></div>
+  </div>
+  <div class="drawer-mask" id="drawerMask"></div>
+  <div class="drawer" id="drawer">
+    <div class="drawer-header">
+      <div class="avatar">药</div>
+      <div class="name">浙大药学 · 27考研</div>
+      <div class="sub">求是创新 · 一战成硕</div>
+    </div>
+    <div class="drawer-nav" id="drawerNav"></div>
+  </div>
+  <div class="main" id="main"></div>
+  <div class="bottom-bar" id="bottomBar">
+    <div class="bb-item active" data-page="home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12l9-9 9 9"/><path d="M5 10v10h14V10"/></svg><span>首页</span></div>
+    <div class="bb-item" data-page="plan"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><span>计划</span></div>
+    <div class="bb-item" data-page="pomodoro"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2"/><path d="M5 3L2 6"/><path d="M22 6l-3-3"/></svg><span>番茄</span></div>
+    <div class="bb-item" data-page="ai"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg><span>AI</span></div>
+  </div>
+</div>
+<div class="viewer-mask" id="viewerMask">
+  <div class="viewer-header"><div class="vh-close" id="viewerClose">✕</div><div class="vh-title" id="viewerTitle"></div><div style="width:32px"></div></div>
+  <div class="viewer-body" id="viewerBody"></div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+"use strict";
+// 数据层 IndexedDB
+var DB_NAME="ZJU_Kaoyan",DB_VERSION=1,db=null;
+function openDB(){return new Promise(function(resolve,reject){
+  if(!window.indexedDB){resolve(null);return;}
+  var req=indexedDB.open(DB_NAME,DB_VERSION);
+  req.onupgradeneeded=function(e){
+    var d=e.target.result;
+    if(!d.objectStoreNames.contains("files"))d.createObjectStore("files",{keyPath:"id"});
+    if(!d.objectStoreNames.contains("data"))d.createObjectStore("data",{keyPath:"key"});
+  };
+  req.onsuccess=function(e){db=e.target.result;resolve(db);};
+  req.onerror=function(e){resolve(null);};
+});}
+function dbPut(store,val){return new Promise(function(res){
+  if(!db){res();return;}
+  var tx=db.transaction(store,"readwrite");tx.objectStore(store).put(val);
+  tx.oncomplete=function(){res();};tx.onerror=function(){res();};
+});}
+function dbGet(store,key){return new Promise(function(res){
+  if(!db){res(null);return;}
+  var tx=db.transaction(store,"readonly");var r=tx.objectStore(store).get(key);
+  r.onsuccess=function(){res(r.result);};r.onerror=function(){res(null);};
+});}
+function dbGetAll(store){return new Promise(function(res){
+  if(!db){res([]);return;}
+  var tx=db.transaction(store,"readonly");var r=tx.objectStore(store).getAll();
+  r.onsuccess=function(){res(r.result||[]);};r.onerror=function(){res([]);};
+});}
+function dbDelete(store,key){return new Promise(function(res){
+  if(!db){res();return;}
+  var tx=db.transaction(store,"readwrite");tx.objectStore(store).delete(key);
+  tx.oncomplete=function(){res();};tx.onerror=function(){res();};
+});}
+function saveData(key,value){return dbPut("data",{key:key,value:value});}
+function loadData(key,def){return dbGet("data",key).then(function(r){return r?r.value:def;});}
+
+// localStorage 降级方案
+var lsFallback={};
+function lsGet(key,def){try{var v=localStorage.getItem("ls_"+key);return v?JSON.parse(v):def;}catch(e){return lsFallback[key]||def;}}
+function lsSet(key,val){try{localStorage.setItem("ls_"+key),JSON.stringify(val);}catch(e){lsFallback[key]=val;}}
+
+// 配置
+var SUBJECTS=[
+  {id:"english",name:"英语",icon:"EN",grad:"linear-gradient(135deg,#7da8d4,#a8c8e8)",sub:"考研英语一",refs:[]},
+  {id:"politics",name:"政治",icon:"政",grad:"linear-gradient(135deg,#e89aa8,#f4b6c2)",sub:"思想政治理论",refs:[]},
+  {id:"medchem",name:"药物化学",icon:"化",grad:"linear-gradient(135deg,#a394d4,#c5b6e8)",sub:"349科目·自命题",refs:[
+    {name:"药物化学",author:"徐云根主编",pub:"人民卫生出版社",year:"2023年版"},
+    {name:"药物化学（第四版）",author:"尤启冬主编",pub:"化学工业出版社",year:"2021年版"}
+  ]},
+  {id:"pharmacy",name:"药剂学",icon:"剂",grad:"linear-gradient(135deg,#7cc4a8,#a8dcc8)",sub:"349科目·自命题",refs:[
+    {name:"药剂学（第9版）",author:"方亮主编",pub:"人民卫生出版社",year:"2023年"},
+    {name:"药剂学（第3版）",author:"何勤、张志荣主编",pub:"高等教育出版社",year:"2021年"}
+  ]},
+  {id:"analysis",name:"药物分析学",icon:"析",grad:"linear-gradient(135deg,#f0a584,#fcc4a8)",sub:"349科目·自命题",refs:[
+    {name:"药物分析学（第3版）",author:"曾苏主编",pub:"高等教育出版社",year:"2021年"},
+    {name:"药物分析（第9版）",author:"杭太俊主编",pub:"人民卫生出版社",year:"2022年"}
+  ]},
+  {id:"pharmacology",name:"药理学",icon:"理",grad:"linear-gradient(135deg,#e8c279,#f7d99e)",sub:"349科目·自命题",refs:[
+    {name:"药理学（第9版）",author:"杨宝峰主编",pub:"人民卫生出版社",year:"2018年"},
+    {name:"药理学（第9版）",author:"陈忠、杜俊蓉主编",pub:"人民卫生出版社",year:"2022年"}
+  ]}
+];
+var TOOLS=[
+  {id:"plan",name:"每日计划",icon:"plan"},
+  {id:"pomodoro",name:"番茄计时",icon:"pomo"},
+  {id:"countdown",name:"考研倒计时",icon:"cd"},
+  {id:"calendar",name:"学习打卡",icon:"calendar"},
+  {id:"formula",name:"公式手册",icon:"formula"},
+  {id:"calctitle",name:"药分计算",icon:"calc2"},
+  {id:"mistakes",name:"易错知识点",icon:"mistake"},
+  {id:"recite",name:"大题默写",icon:"recite"},
+  {id:"memo",name:"信息备忘录",icon:"memo"},
+  {id:"ai",name:"AI助手",icon:"ai"}
+];
+var NAV_ICONS={
+  home:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12l9-9 9 9"/><path d="M5 10v10h14V10"/></svg>',
+  plan:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><path d="M9 14l2 2 4-4"/></svg>',
+  pomo:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2"/><path d="M5 3L2 6"/><path d="M22 6l-3-3"/></svg>',
+  cd:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="13" r="8"/><path d="M12 9v4"/><path d="M9 2h6"/></svg>',
+  calendar:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><rect x="7" y="14" width="3" height="3" rx="0.5" fill="currentColor" stroke="none"/></svg>',
+  formula:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h6v6H4z"/><path d="M14 4h6v6h-6z"/><path d="M4 14h6v6H4z"/><path d="M14 14h6v6h-6z"/><line x1="10" y1="7" x2="14" y2="7"/><line x1="7" y1="10" x2="7" y2="14"/></svg>',
+  calc2:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="11" x2="8" y2="11"/><line x1="12" y1="11" x2="12" y2="11"/><line x1="16" y1="11" x2="16" y2="11"/><line x1="8" y1="15" x2="8" y2="15"/><line x1="12" y1="15" x2="12" y2="15"/><line x1="16" y1="15" x2="16" y2="15"/><line x1="8" y1="18" x2="8" y2="18"/></svg>',
+  mistake:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 22h20L12 2z"/><line x1="12" y1="9" x2="12" y2="14"/><line x1="12" y1="17" x2="12" y2="17.5"/></svg>',
+  recite:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/></svg>',
+  memo:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>',
+  ai:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>'
+};
+
+// 2027考研初试：2026年12月19日
+var EXAM_DATE=new Date("2026-12-19T08:30:00");
+var TARGET_SCHOOL="浙江大学";
+var TARGET_MAJOR="药学（专业学位 105500）";
+
+var currentPage="home";
+var pomodoroTimer=null;
+var pomodoroState={mode:"focus",seconds:25*60,running:false,total:25*60};
+var phcalcState={type:"titration",count:0,right:0,q:{},start:0};
+var fileViewerUrl=null;
+
+function $(id){return document.getElementById(id);}
+function el(tag,cls,html){var e=document.createElement(tag);if(cls)e.className=cls;if(html!=null)e.innerHTML=html;return e;}
+
+// 渲染导航
+function renderNav(){
+  var nav=$("drawerNav");
+  var h="";
+  h+='<div class="nav-group-title">学习科目</div>';
+  h+='<div class="nav-item" data-page="home"><div class="icon">'+NAV_ICONS.home+'</div><span>首页概览</span></div>';
+  SUBJECTS.forEach(function(s){
+    h+='<div class="nav-item sub-item" data-subject="'+s.id+'"><div class="icon" style="background:'+s.grad+';color:#fff;">'+s.icon+'</div><span>'+s.name+'</span></div>';
+  });
+  h+='<div class="nav-group-title">工具箱</div>';
+  TOOLS.forEach(function(t){
+    h+='<div class="nav-item" data-tool="'+t.id+'"><div class="icon">'+(NAV_ICONS[t.icon]||"")+'</div><span>'+t.name+'</span></div>';
+  });
+  nav.innerHTML=h;
+  var items=nav.querySelectorAll("[data-page],[data-subject],[data-tool]");
+  for(var i=0;i<items.length;i++){
+    items[i].addEventListener("click",function(){
+      if(this.dataset.page)goto(this.dataset.page);
+      else if(this.dataset.subject)gotoSubject(this.dataset.subject);
+      else if(this.dataset.tool)goto(this.dataset.tool);
+      closeDrawer();
+    });
+  }
+}
+
+function goto(page){
+  currentPage=page;
+  renderPage(page);
+  updateActiveNav(page);
+  updateBottomBar(page);
+  var titles={home:"考研工作台",plan:"每日计划",pomodoro:"番茄计时",countdown:"考研倒计时",calendar:"学习打卡",formula:"公式手册",calctitle:"药分计算",mistakes:"易错知识点",recite:"大题默写",memo:"信息备忘录",ai:"AI助手"};
+  $("pageTitle").textContent=titles[page]||"考研工作台";
+}
+function gotoSubject(id){
+  currentPage="subject:"+id;
+  renderSubjectPage(id);
+  updateActiveNav("subject:"+id);
+  updateBottomBar(null);
+  var s=SUBJECTS.filter(function(x){return x.id===id;})[0];
+  $("pageTitle").textContent=s?s.name:"科目";
+}
+function updateActiveNav(page){
+  var items=document.querySelectorAll(".nav-item");
+  for(var i=0;i<items.length;i++){
+    items[i].classList.remove("active");
+    if(items[i].dataset.page===page||items[i].dataset.tool===page)items[i].classList.add("active");
+  }
+}
+function updateBottomBar(page){
+  var items=document.querySelectorAll(".bb-item");
+  for(var i=0;i<items.length;i++){
+    items[i].classList.toggle("active",items[i].dataset.page===page);
+  }
+}
+
+// 首页
+function renderHome(){
+  loadData("plans",[]).then(function(plans){
+    dbGetAll("files").then(function(files){
+      loadData("pomoCount",0).then(function(pomoCount){
+        loadData("checkinDays",[]).then(function(checkinDays){
+        loadData("firstUseDate",0).then(function(firstUse){
+        if(!firstUse){firstUse=new Date().getTime();saveData("firstUseDate",firstUse);}
+        var days=Math.ceil((EXAM_DATE-new Date())/86400000);
+        var today=new Date().toDateString();
+        var todayPlans=plans.filter(function(p){return p.date===today;});
+        var doneCount=todayPlans.filter(function(p){return p.done;}).length;
+        var startDate=new Date(firstUse);
+        var passedDays=Math.max(1,Math.ceil((new Date()-startDate)/86400000)+1);
+        var totalDays=Math.max(1,Math.ceil((EXAM_DATE-startDate)/86400000));
+        var progress=Math.min(100,Math.round(passedDays/totalDays*100));
+        var checkinCount=(checkinDays||[]).length;
+
+        $("main").innerHTML=
+        '<div class="page active">'+
+          '<div class="hero-card">'+
+            '<div class="label">距离2027考研初试还有</div>'+
+            '<div class="countdown">'+(days<0?0:days)+'<span class="unit">天</span></div>'+
+            '<div class="exam-date">2026年12月19日-20日 · 全国硕士研究生招生考试</div>'+
+            '<div class="target"> '+TARGET_SCHOOL+' · '+TARGET_MAJOR+'</div>'+
+            '<div class="progress-wrap"><div class="progress-bar" style="width:'+progress+'%"></div></div>'+
+            '<div class="progress-text">备考进度 '+progress+'% · 已坚持 '+passedDays+' 天</div>'+
+          '</div>'+
+
+          '<div class="zju-info">'+
+            '<div class="zi-row"><div class="zi-label">目标院校</div><div class="zi-val">浙江大学（紫金港校区）</div></div>'+
+            '<div class="zi-row"><div class="zi-label">招生专业</div><div class="zi-val">药学 · 专业学位（105500）</div></div>'+
+            '<div class="zi-row"><div class="zi-label">初试科目</div><div class="zi-val">政治 + 英语一 + 349药学综合</div></div>'+
+            '<div class="zi-row"><div class="zi-label">学院官网</div><div class="zi-val">cps.zju.edu.cn</div></div>'+
+          '</div>'+
+
+          '<div class="stat-grid">'+
+            '<div class="stat-card"><div class="num">'+todayPlans.length+'</div><div class="lbl">今日任务</div></div>'+
+            '<div class="stat-card"><div class="num">'+doneCount+'/'+todayPlans.length+'</div><div class="lbl">已完成</div></div>'+
+            '<div class="stat-card"><div class="num">'+pomoCount+'</div><div class="lbl">番茄钟</div></div>'+
+            '<div class="stat-card" data-go="calendar" style="cursor:pointer;"><div class="num">'+checkinCount+'</div><div class="lbl">打卡天数</div></div>'+
+          '</div>'+
+
+          '<div class="card">'+
+            '<div class="card-title"><span class="dot"></span>快速入口</div>'+
+            '<div class="quick-grid" style="grid-template-columns:repeat(3,1fr);">'+
+              '<div class="quick-item" data-go="pomodoro"><div class="qi-icon" style="background:var(--m-mint-l);color:var(--m-mint-d);">'+NAV_ICONS.pomo+'</div><div class="qi-label">番茄钟</div></div>'+
+              '<div class="quick-item" data-go="plan"><div class="qi-icon" style="background:var(--m-blue-l);color:var(--m-blue-d);">'+NAV_ICONS.plan+'</div><div class="qi-label">计划</div></div>'+
+              '<div class="quick-item" data-go="calendar"><div class="qi-icon" style="background:var(--m-yellow-l);color:var(--m-yellow-d);">'+NAV_ICONS.calendar+'</div><div class="qi-label">打卡</div></div>'+
+              '<div class="quick-item" data-go="formula"><div class="qi-icon" style="background:var(--m-lav-l);color:var(--m-lav-d);">'+NAV_ICONS.formula+'</div><div class="qi-label">公式</div></div>'+
+              '<div class="quick-item" data-go="calctitle"><div class="qi-icon" style="background:var(--m-peach-l);color:var(--m-peach-d);">'+NAV_ICONS.calc2+'</div><div class="qi-label">药分计算</div></div>'+
+              '<div class="quick-item" data-go="ai"><div class="qi-icon" style="background:var(--m-pink-l);color:var(--m-pink-d);">'+NAV_ICONS.ai+'</div><div class="qi-label">AI</div></div>'+
+            '</div>'+
+          '</div>'+
+
+          '<div class="card today-tasks-mini">'+
+            '<div class="card-title"><span class="dot"></span>今日待办</div>'+
+            (todayPlans.length===0?
+              '<div class="empty-state"><div class="es-icon"></div><div class="es-text">还没有今日计划，去添加吧</div></div>':
+              todayPlans.map(function(p){
+                return '<div class="task-item '+(p.done?"done":"")+'" data-plan="'+p.id+'">'+
+                  '<div class="task-check">'+(p.done?'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>':'')+'</div>'+
+                  '<div class="t-name">'+p.name+'</div>'+
+                  '<div class="t-tag">'+(p.subject||"通用")+'</div>'+
+                '</div>';
+              }).join("")
+            )+
+          '</div>'+
+
+          '<div class="card">'+
+            '<div class="card-title"><span class="dot"></span>学习科目</div>'+
+            SUBJECTS.map(function(s){
+              return '<div class="quick-item" style="display:flex;text-align:left;padding:12px;margin-bottom:7px;" data-subject="'+s.id+'">'+
+                '<div style="width:40px;height:40px;border-radius:12px;background:'+s.grad+';color:#fff;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:600;margin-right:11px;flex-shrink:0;">'+s.icon+'</div>'+
+                '<div style="flex:1;"><div style="font-size:14px;font-weight:500;color:var(--text-1)">'+s.name+'</div><div style="font-size:11px;color:var(--text-3)">'+s.sub+'</div></div>'+
+                '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px;color:var(--text-3)"><polyline points="9 18 15 12 9 6"/></svg>'+
+              '</div>';
+            }).join("")+
+          '</div>'+
+        '</div>';
+
+        var gos=document.querySelectorAll("[data-go]");
+        for(var i=0;i<gos.length;i++)gos[i].addEventListener("click",function(){goto(this.dataset.go);});
+        var sbs=document.querySelectorAll("[data-subject]");
+        for(var i=0;i<sbs.length;i++)sbs[i].addEventListener("click",function(){gotoSubject(this.dataset.subject);});
+        var ps=document.querySelectorAll("[data-plan]");
+        for(var i=0;i<ps.length;i++)ps[i].addEventListener("click",function(){
+          var id=this.dataset.plan;
+          loadData("plans",[]).then(function(plans){
+            var p=plans.filter(function(x){return x.id===id;})[0];
+            if(p){p.done=!p.done;saveData("plans",plans).then(function(){renderHome();});}
+          });
+        });
+        var cg=document.querySelector('[data-go="calendar"]');
+        if(cg)cg.addEventListener("click",function(){goto("calendar");});
+        });
+        });
+      });
+    });
+  });
+}
+
+// 科目页
+function renderSubjectPage(subjectId){
+  var s=SUBJECTS.filter(function(x){return x.id===subjectId;})[0];
+  dbGetAll("files").then(function(allFiles){
+    var files=allFiles.filter(function(f){return f.subject===subjectId;});
+    var pdfFiles=files.filter(function(f){return f.type==="pdf";});
+    var videoFiles=files.filter(function(f){return f.type==="video";});
+    var activeTab="all";
+
+    $("main").innerHTML=
+    '<div class="page active">'+
+      '<div class="subject-header" style="background:'+s.grad+';">'+
+        '<div class="sh-icon">'+s.icon+'</div>'+
+        '<div class="sh-info"><div class="sh-name">'+s.name+'</div><div class="sh-sub">'+s.sub+' · '+files.length+' 个资料</div></div>'+
+      '</div>'+
+      (s.refs&&s.refs.length?'<div class="card" style="font-size:12px;color:var(--text-2);line-height:1.7;"><b style="color:var(--text-1)"> 官方参考书目（浙大349指定）：</b>'+s.refs.map(function(r,i){return '<div style="margin-top:6px;padding:7px 9px;background:var(--m-mint-l);border-radius:8px;"><span style="color:var(--m-mint-d);font-weight:600;">'+(i+1)+'.</span> 《'+r.name+'》 '+r.author+'，'+r.pub+'，'+r.year+'</div>';}).join("")+'</div>':'')+
+      '<div class="upload-zone" id="uploadZone">'+
+        '<div class="uz-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></div>'+
+        '<div class="uz-text">点击上传学习资料</div>'+
+        '<div class="uz-hint">支持 PDF 文档、视频文件（网课/真题/模拟题）</div>'+
+        '<input type="file" id="fileInput" accept=".pdf,video/*" multiple style="display:none">'+
+      '</div>'+
+      '<div class="file-tabs" id="fileTabs">'+
+        '<div class="file-tab active" data-tab="all">全部 '+files.length+'</div>'+
+        '<div class="file-tab" data-tab="pdf">PDF '+pdfFiles.length+'</div>'+
+        '<div class="file-tab" data-tab="video">视频 '+videoFiles.length+'</div>'+
+      '</div>'+
+      '<div class="file-list" id="fileList"></div>'+
+    '</div>';
+
+    function renderFileList(){
+      var list=$("fileList");
+      var show=files;
+      if(activeTab==="pdf")show=pdfFiles;
+      if(activeTab==="video")show=videoFiles;
+      if(show.length===0){
+        list.innerHTML='<div class="empty-state"><div class="es-icon"></div><div class="es-text">暂无资料，点击上方上传</div></div>';
+        return;
+      }
+      list.innerHTML=show.map(function(f){
+        var isPdf=f.type==="pdf";
+        return '<div class="file-item">'+
+          '<div class="fi-icon '+f.type+'">'+(isPdf?"PDF":"▶")+'</div>'+
+          '<div class="fi-info"><div class="fi-name">'+f.name+'</div><div class="fi-meta">'+formatSize(f.size)+' · '+f.added+'</div></div>'+
+          '<div class="fi-actions">'+
+            '<div class="fi-btn" data-view="'+f.id+'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg></div>'+
+            '<div class="fi-btn del" data-del="'+f.id+'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></div>'+
+          '</div>'+
+        '</div>';
+      }).join("");
+      var vs=list.querySelectorAll("[data-view]");
+      for(var i=0;i<vs.length;i++)vs[i].addEventListener("click",function(){viewFile(this.dataset.view);});
+      var ds=list.querySelectorAll("[data-del]");
+      for(var i=0;i<ds.length;i++)ds[i].addEventListener("click",function(){
+        if(confirm("确定删除这个文件吗？")){
+          var id=this.dataset.del;
+          dbDelete("files",id).then(function(){toast("已删除");renderSubjectPage(subjectId);});
+        }
+      });
+    }
+    renderFileList();
+
+    var tabs=document.querySelectorAll(".file-tab");
+    for(var i=0;i<tabs.length;i++)tabs[i].addEventListener("click",function(){
+      var ts=document.querySelectorAll(".file-tab");
+      for(var j=0;j<ts.length;j++)ts[j].classList.remove("active");
+      this.classList.add("active");
+      activeTab=this.dataset.tab;
+      renderFileList();
+    });
+
+    $("uploadZone").addEventListener("click",function(){$("fileInput").click();});
+    $("fileInput").addEventListener("change",function(e){
+      var fileList=e.target.files;
+      var promises=[];
+      for(var i=0;i<fileList.length;i++){
+        var file=fileList[i];
+        var id="f_"+Date.now()+"_"+Math.random().toString(36).slice(2,8);
+        var type=(file.type.indexOf("pdf")>=0||file.name.toLowerCase().indexOf(".pdf")>=0)?"pdf":"video";
+        promises.push(dbPut("files",{
+          id:id,subject:subjectId,name:file.name,size:file.size,type:type,blob:file,
+          added:new Date().toLocaleDateString("zh-CN",{month:"short",day:"numeric"})
+        }));
+      }
+      Promise.all(promises).then(function(){toast("上传成功");renderSubjectPage(subjectId);});
+    });
+  });
+}
+
+function formatSize(b){
+  if(b<1024)return b+"B";
+  if(b<1048576)return(b/1024).toFixed(1)+"KB";
+  return(b/1048576).toFixed(1)+"MB";
+}
+
+function viewFile(id){
+  dbGet("files",id).then(function(f){
+    if(!f)return;
+    if(fileViewerUrl)URL.revokeObjectURL(fileViewerUrl);
+    var url=URL.createObjectURL(f.blob);
+    fileViewerUrl=url;
+    $("viewerTitle").textContent=f.name;
+    if(f.type==="pdf"){
+      $("viewerBody").innerHTML='<iframe src="'+url+'#toolbar=0"></iframe>';
+    }else{
+      $("viewerBody").innerHTML='<video src="'+url+'" controls autoplay></video>';
+    }
+    $("viewerMask").classList.add("open");
+  });
+}
+$("viewerClose").addEventListener("click",function(){
+  $("viewerMask").classList.remove("open");
+  $("viewerBody").innerHTML="";
+  if(fileViewerUrl){URL.revokeObjectURL(fileViewerUrl);fileViewerUrl=null;}
+});
+
+// 每日计划
+function renderPlan(){
+  loadData("plans",[]).then(function(plans){
+    var today=new Date().toDateString();
+    var todayPlans=plans.filter(function(p){return p.date===today;});
+    var doneCount=todayPlans.filter(function(p){return p.done;}).length;
+    var pct=todayPlans.length===0?0:Math.round(doneCount/todayPlans.length*100);
+
+    $("main").innerHTML=
+    '<div class="page active">'+
+      '<div class="plan-date">'+new Date().toLocaleDateString("zh-CN",{year:"numeric",month:"long",day:"numeric",weekday:"long"})+'</div>'+
+      '<div class="plan-progress">'+
+        '<div class="pp-circle"><svg viewBox="0 0 46 46"><circle cx="23" cy="23" r="19" fill="none" stroke="var(--m-mint-l)" stroke-width="5"/><circle cx="23" cy="23" r="19" fill="none" stroke="var(--m-mint-d)" stroke-width="5" stroke-linecap="round" stroke-dasharray="'+(2*Math.PI*19)+'" stroke-dashoffset="'+(2*Math.PI*19*(1-pct/100))+'"/></svg><div class="pp-num">'+pct+'%</div></div>'+
+        '<div class="pp-text"><div class="pt-main">今日完成 '+doneCount+'/'+todayPlans.length+'</div><div class="pt-sub">'+(pct===100?"全部完成，太棒了！":todayPlans.length===0?"添加你的第一个计划吧":"还有 "+(todayPlans.length-doneCount)+" 个任务待完成")+'</div></div>'+
+      '</div>'+
+      '<div class="plan-add"><input type="text" id="planInput" placeholder="添加学习任务..." /><select id="planSubject">'+SUBJECTS.map(function(s){return '<option value="'+s.name+'">'+s.name+'</option>';}).join("")+'<option value="通用" selected>通用</option></select><button id="planAddBtn">+</button></div>'+
+      '<div id="planList"></div>'+
+    '</div>';
+
+    function renderPlanList(){
+      var list=$("planList");
+      if(todayPlans.length===0){list.innerHTML='<div class="empty-state"><div class="es-icon"></div><div class="es-text">今日暂无计划</div></div>';return;}
+      todayPlans.sort(function(a,b){return a.done-b.done;});
+      list.innerHTML=todayPlans.map(function(p){
+        return '<div class="plan-item '+(p.done?"done":"")+'" data-id="'+p.id+'">'+
+          '<div class="pi-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>'+
+          '<div class="pi-content"><div class="pi-name">'+p.name+'</div><span class="pi-tag">'+p.subject+'</span></div>'+
+          '<div class="pi-del" data-del="'+p.id+'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg></div>'+
+        '</div>';
+      }).join("");
+      var is=list.querySelectorAll("[data-id]");
+      for(var i=0;i<is.length;i++)is[i].addEventListener("click",function(){
+        var id=this.dataset.id;
+        var p=plans.filter(function(x){return x.id===id;})[0];
+        if(p){p.done=!p.done;saveData("plans",plans).then(function(){renderPlan();});}
+      });
+      var ds=list.querySelectorAll("[data-del]");
+      for(var i=0;i<ds.length;i++)ds[i].addEventListener("click",function(e){
+        e.stopPropagation();
+        var id=this.dataset.del;
+        var idx=plans.findIndex(function(x){return x.id===id;});
+        if(idx>=0){plans.splice(idx,1);saveData("plans",plans).then(function(){renderPlan();});}
+      });
+    }
+    renderPlanList();
+
+    $("planAddBtn").addEventListener("click",function(){
+      var input=$("planInput");
+      var name=input.value.trim();
+      if(!name){toast("请输入任务内容");return;}
+      var subject=$("planSubject").value;
+      plans.push({id:"p_"+Date.now(),name:name,subject:subject,done:false,date:today});
+      saveData("plans",plans).then(function(){input.value="";renderPlan();});
+    });
+    $("planInput").addEventListener("keypress",function(e){if(e.key==="Enter")$("planAddBtn").click();});
+  });
+}
+
+// 番茄钟
+function renderPomodoro(){
+  loadData("pomoCount",0).then(function(count){
+    loadData("pomoToday_"+new Date().toDateString(),0).then(function(todayFocus){
+      pomodoroState.running=false;
+      if(pomodoroTimer){clearInterval(pomodoroTimer);pomodoroTimer=null;}
+
+      $("main").innerHTML=
+      '<div class="page active">'+
+        '<div class="card"><div class="pomodoro-wrap">'+
+          '<div class="pomo-mode-tabs">'+
+            '<div class="pomo-mode-tab active" data-mode="focus" data-sec="'+(25*60)+'">专注 25分钟</div>'+
+            '<div class="pomo-mode-tab" data-mode="short" data-sec="'+(5*60)+'">短休息 5分钟</div>'+
+            '<div class="pomo-mode-tab" data-mode="long" data-sec="'+(15*60)+'">长休息 15分钟</div>'+
+          '</div>'+
+          '<div class="pomo-clock"><svg viewBox="0 0 210 210"><circle class="pomo-ring-bg" cx="105" cy="105" r="95"/><circle class="pomo-ring" cx="105" cy="105" r="95" id="pomoRing" stroke-dasharray="'+(2*Math.PI*95)+'" stroke-dashoffset="0"/></svg><div class="pomo-time"><div class="pt-time" id="pomoTime">25:00</div><div class="pt-label" id="pomoLabel">准备开始专注</div></div></div>'+
+          '<div class="pomo-controls">'+
+            '<div class="pomo-btn secondary" id="pomoReset"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg></div>'+
+            '<div class="pomo-btn primary" id="pomoStart"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="6 4 20 12 6 20"/></svg></div>'+
+            '<div class="pomo-btn secondary" id="pomoSkip" style="display:none"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5 4 15 12 5 20"/><rect x="17" y="4" width="2" height="16"/></svg></div>'+
+          '</div>'+
+          '<div class="pomo-stats"><div class="pomo-stat"><div class="ps-num">'+count+'</div><div class="ps-lbl">累计番茄</div></div><div class="pomo-stat"><div class="ps-num">'+todayFocus+'</div><div class="ps-lbl">今日专注</div></div></div>'+
+        '</div></div>'+
+        '<div class="card"><div class="card-title"><span class="dot"></span>使用说明</div><div style="font-size:13px;color:var(--text-2);line-height:1.8;"><b>专注</b>：25分钟集中学习，不看手机<br><b>短休息</b>：5分钟放松，站起来活动<br><b>长休息</b>：每完成4个番茄后休息15分钟<br>完成一个专注番茄会自动计数，坚持就是胜利！</div></div>'+
+      '</div>';
+
+      var ringEl=$("pomoRing"),timeEl=$("pomoTime"),labelEl=$("pomoLabel");
+      var startBtn=$("pomoStart"),resetBtn=$("pomoReset"),skipBtn=$("pomoSkip");
+      var ringLen=2*Math.PI*95;
+
+      function updateDisplay(){
+        var m=Math.floor(pomodoroState.seconds/60),s=pomodoroState.seconds%60;
+        timeEl.textContent=(m<10?"0":"")+m+":"+(s<10?"0":"")+s;
+        var pct=pomodoroState.total>0?(1-pomodoroState.seconds/pomodoroState.total):0;
+        ringEl.style.strokeDashoffset=ringLen*pct;
+        var labels={focus:"专注中",short:"短休息",long:"长休息"};
+        labelEl.textContent=pomodoroState.running?labels[pomodoroState.mode]:(pomodoroState.seconds===pomodoroState.total?"准备开始"+labels[pomodoroState.mode]:"已暂停");
+      }
+      updateDisplay();
+
+      function start(){
+        if(pomodoroState.running){
+          clearInterval(pomodoroTimer);
+          pomodoroState.running=false;
+          startBtn.innerHTML='<svg viewBox="0 0 24 24" fill="currentColor"><polygon points="6 4 20 12 6 20"/></svg>';
+        }else{
+          pomodoroState.running=true;
+          startBtn.innerHTML='<svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>';
+          skipBtn.style.display="flex";
+          pomodoroTimer=setInterval(function(){
+            pomodoroState.seconds--;
+            if(pomodoroState.seconds<=0){
+              clearInterval(pomodoroTimer);
+              pomodoroState.running=false;
+              startBtn.innerHTML='<svg viewBox="0 0 24 24" fill="currentColor"><polygon points="6 4 20 12 6 20"/></svg>';
+              if(pomodoroState.mode==="focus"){
+                loadData("pomoCount",0).then(function(c){
+                  saveData("pomoCount",c+1).then(function(){
+                    loadData("pomoToday_"+new Date().toDateString(),0).then(function(td){
+                      saveData("pomoToday_"+new Date().toDateString(),td+1).then(function(){
+                        toast(" 专注完成！该休息了");
+                        renderPomodoro();
+                      });
+                    });
+                  });
+                });
+              }else{
+                toast("休息结束，继续加油！");
+                renderPomodoro();
+              }
+              return;
+            }
+            updateDisplay();
+          },1000);
+        }
+        updateDisplay();
+      }
+      startBtn.addEventListener("click",start);
+      resetBtn.addEventListener("click",function(){
+        if(pomodoroTimer){clearInterval(pomodoroTimer);pomodoroTimer=null;}
+        pomodoroState.running=false;
+        pomodoroState.seconds=pomodoroState.total;
+        startBtn.innerHTML='<svg viewBox="0 0 24 24" fill="currentColor"><polygon points="6 4 20 12 6 20"/></svg>';
+        skipBtn.style.display="none";
+        updateDisplay();
+      });
+      skipBtn.addEventListener("click",function(){
+        if(pomodoroTimer){clearInterval(pomodoroTimer);pomodoroTimer=null;}
+        pomodoroState.running=false;
+        if(pomodoroState.mode==="focus"){
+          loadData("pomoCount",0).then(function(c){saveData("pomoCount",c+1).then(function(){toast("已跳过");renderPomodoro();});});
+        }else{toast("已跳过");renderPomodoro();}
+      });
+
+      var tabs=document.querySelectorAll(".pomo-mode-tab");
+      for(var i=0;i<tabs.length;i++)tabs[i].addEventListener("click",function(){
+        if(pomodoroTimer){clearInterval(pomodoroTimer);pomodoroTimer=null;}
+        var ts=document.querySelectorAll(".pomo-mode-tab");
+        for(var j=0;j<ts.length;j++)ts[j].classList.remove("active");
+        this.classList.add("active");
+        pomodoroState.mode=this.dataset.mode;
+        pomodoroState.total=parseInt(this.dataset.sec);
+        pomodoroState.seconds=pomodoroState.total;
+        pomodoroState.running=false;
+        startBtn.innerHTML='<svg viewBox="0 0 24 24" fill="currentColor"><polygon points="6 4 20 12 6 20"/></svg>';
+        skipBtn.style.display="none";
+        updateDisplay();
+      });
+    });
+  });
+}
+
+// 倒计时
+function renderCountdown(){
+  var now=new Date();
+  var diff=EXAM_DATE-now;
+  var days=Math.max(0,Math.floor(diff/86400000));
+  var hours=Math.max(0,Math.floor((diff%86400000)/3600000));
+  var mins=Math.max(0,Math.floor((diff%3600000)/60000));
+  var secs=Math.max(0,Math.floor((diff%60000)/1000));
+
+  var milestones=[
+    {name:"考研预报名",date:"2026-10-09",desc:"网上预报名开始"},
+    {name:"正式报名",date:"2026-10-15",desc:"网上正式报名"},
+    {name:"网上确认",date:"2026-11-05",desc:"确认报名信息"},
+    {name:"准考证打印",date:"2026-12-14",desc:"下载打印准考证"},
+    {name:"初试考试",date:"2026-12-19",desc:"全国硕士研究生招生考试"}
+  ];
+
+  $("main").innerHTML=
+  '<div class="page active">'+
+    '<div class="countdown-big">'+
+      '<div class="cb-label">距离2027考研初试还有</div>'+
+      '<div class="cb-days">'+days+'<span class="cb-unit">天</span></div>'+
+      '<div class="cb-date">2026年12月19日-20日 · 浙大药学</div>'+
+    '</div>'+
+    '<div class="cd-detail-grid">'+
+      '<div class="cd-detail"><div class="cd-num">'+days+'</div><div class="cd-lbl">天</div></div>'+
+      '<div class="cd-detail"><div class="cd-num">'+hours+'</div><div class="cd-lbl">小时</div></div>'+
+      '<div class="cd-detail"><div class="cd-num">'+mins+'</div><div class="cd-lbl">分钟</div></div>'+
+      '<div class="cd-detail"><div class="cd-num">'+secs+'</div><div class="cd-lbl">秒</div></div>'+
+    '</div>'+
+    '<div class="card cd-milestones"><div class="card-title"><span class="dot"></span>重要节点</div>'+
+      milestones.map(function(m){
+        var md=new Date(m.date);
+        var d=Math.ceil((md-now)/86400000);
+        var passed=d<0;
+        return '<div class="ms-item '+(passed?"passed":"")+'"><div class="ms-dot"></div><div class="ms-info"><div class="ms-name">'+m.name+'</div><div class="ms-date">'+m.date+' · '+m.desc+'</div></div><div class="ms-days">'+(passed?"已过":d+"天")+'</div></div>';
+      }).join("")+
+    '</div>'+
+    '<div class="card"><div class="card-title"><span class="dot"></span>浙大药学349科目</div><div style="font-size:13px;color:var(--text-2);line-height:1.8;">初试科目：<b>政治 + 英语一 + 349药学综合</b><br>349包含：药物化学、药剂学、药物分析学、药理学<br>参考书目详见各科目页面</div></div>'+
+    '<div class="card"><div class="card-title"><span class="dot"></span>冲刺提醒</div><div style="font-size:13px;color:var(--text-2);line-height:1.8;">'+(days>180?"备考起步阶段，打好基础，英语词汇和专业课教材过一遍。":days>90?"强化阶段，重点突破专业课，真题精刷。":days>30?"冲刺阶段，查漏补缺，模拟实战。":days>7?"最后冲刺！调整作息，保持状态。":"即将上考场，全力以赴！")+'</div></div>'+
+  '</div>';
+}
+
+// 药物分析公式手册
+var PHARMA_FORMULAS=[
+  {cat:"容量分析",items:[
+    {name:"物质的量浓度",formula:"C = n / V",desc:"C为浓度(mol/L)，n为溶质物质的量(mol)，V为溶液体积(L)"},
+    {name:"滴定度",formula:"T = m / V",desc:"T为滴定度(g/mL或mg/mL)，m为被测物质质量，V为消耗滴定液体积"},
+    {name:"含量计算（滴定法）",formula:"含量% = (V × T / m) × 100%",desc:"V为消耗滴定液体积，T为滴定度，m为样品质量"},
+    {name:"浓度校正因子",formula:"F = C实 / C标",desc:"实际浓度与标称浓度之比，用于校正滴定液"}
+  ]},
+  {cat:"紫外分光光度法",items:[
+    {name:"朗伯-比尔定律",formula:"A = E × C × L",desc:"A为吸光度，E为吸收系数，C为浓度，L为液层厚度(cm)"},
+    {name:"吸收系数",formula:"E = A / (C × L)",desc:"C单位g/100mL时为E1%1cm"},
+    {name:"含量测定（对照品法）",formula:"C样 = (A样/A对) × C对",desc:"样为供试品，对为对照品"},
+    {name:"含量测定（吸收系数法）",formula:"含量% = (A × D / (E × L × m)) × 100%",desc:"D为稀释倍数，m为样品质量"}
+  ]},
+  {cat:"色谱法",items:[
+    {name:"保留时间",formula:"tR",desc:"组分从进样到出现峰最大值的时间"},
+    {name:"分离度",formula:"R = 2(tR2-tR1)/(W1+W2)",desc:"tR为保留时间，W为峰宽。R≥1.5为完全分离"},
+    {name:"理论塔板数",formula:"n = 16(tR/W)² = 5.54(tR/Wh)²",desc:"W为峰宽，Wh为半峰宽。n越大柱效越高"},
+    {name:"色谱峰面积归一化",formula:"Ci% = Ai / ΣA × 100%",desc:"Ai为组分i峰面积，适用于同系物杂质检查"},
+    {name:"内标法含量",formula:"Ci = (Ai/As) × Cs × f",desc:"f为校正因子，As为内标峰面积，Cs为内标浓度"}
+  ]},
+  {cat:"杂质检查",items:[
+    {name:"杂质限量",formula:"L = (C × V) / m × 100%",desc:"L为杂质限量，C为标准液浓度，V为体积，m为供试品量"},
+    {name:"砷盐检查",formula:"As限 = (V × 0.000001) / m × 100%",desc:"V为标准砷液体积，每1mL相当于1μg As"},
+    {name:"重金属检查",formula:"Pb限 = (V × 0.01) / m × 100%",desc:"V为标准铅液体积，每1mL相当于10μg Pb"}
+  ]},
+  {cat:"制剂分析",items:[
+    {name:"溶出度",formula:"溶出量% = (A样×C对×D) / (A对×m标) × 100%",desc:"D为稀释倍数，需标示量折算"},
+    {name:"含量均匀度",formula:"A+1.80S ≤ 15.0",desc:"A为标示量与均值之差，S为标准差。符合则为合格"},
+    {name:"标示量%",formula:"标示量% = (实测含量 / 标示量) × 100%",desc:"制剂规格含量的百分比表示"}
+  ]}
+];
+
+function renderFormula(){
+  var catActive=0;
+  $("main").innerHTML=
+  '<div class="page active">'+
+    '<div class="card"><div class="card-title"><span class="dot"></span>药物分析公式手册</div><div style="font-size:12px;color:var(--text-2);line-height:1.6;margin-bottom:10px;">收录容量分析、紫外、色谱、杂质检查、制剂分析等常用公式，点击分类查看</div></div>'+
+    '<div class="file-tabs" id="formulaTabs">'+
+      PHARMA_FORMULAS.map(function(f,i){return '<div class="file-tab'+(i===0?" active":"")+'" data-cat="'+i+'">'+f.cat+'</div>';}).join("")+
+    '</div>'+
+    '<div id="formulaList"></div>'+
+  '</div>';
+  function renderList(){
+    var list=$("formulaList");
+    var cat=PHARMA_FORMULAS[catActive];
+    list.innerHTML=cat.items.map(function(it){
+      return '<div class="card" style="margin-bottom:10px;">'+
+        '<div style="font-size:14px;font-weight:600;color:var(--text-1);margin-bottom:8px;">'+it.name+'</div>'+
+        '<div style="background:var(--m-mint-l);border-radius:10px;padding:12px;text-align:center;font-size:17px;font-weight:600;color:var(--m-mint-d);font-family:Georgia,serif;margin-bottom:8px;">'+it.formula+'</div>'+
+        '<div style="font-size:12px;color:var(--text-2);line-height:1.6;">'+it.desc+'</div>'+
+      '</div>';
+    }).join("");
+  }
+  renderList();
+  var tabs=document.querySelectorAll("#formulaTabs .file-tab");
+  for(var i=0;i<tabs.length;i++)tabs[i].addEventListener("click",function(){
+    var ts=document.querySelectorAll("#formulaTabs .file-tab");
+    for(var j=0;j<ts.length;j++)ts[j].classList.remove("active");
+    this.classList.add("active");
+    catActive=parseInt(this.dataset.cat);
+    renderList();
+  });
+}
+
+// 药分计算题练习
+function genPhCalcQuestion(type){
+  var q={};
+  if(type==="titration"){
+    var V=(Math.floor(Math.random()*20)+10).toFixed(1);
+    var T=(Math.floor(Math.random()*50)+50)/10;
+    var m=(Math.floor(Math.random()*200)+200)/100;
+    q.text="称取样品 "+m+" g，用滴定液滴定，消耗 "+V+" mL，滴定度 T = "+T+" mg/mL。求含量百分含量（%）";
+    q.answer=Math.round((V*T/1000)/m*10000)/100;
+    q.formula="含量% = (V×T/m)×100% = ("+V+"×"+T+"/1000/"+m+")×100%";
+  }else if(type==="uv"){
+    var A=(Math.floor(Math.random()*40)+40)/100;
+    var E=Math.floor(Math.random()*200)+300;
+    var L=1;
+    q.text="某药物溶液测得吸光度 A = "+A+"，吸收系数 E = "+E+"，液层厚度 L = "+L+" cm。求浓度 C（g/100mL）";
+    q.answer=Math.round(A/(E*L)*10000)/10000;
+    q.formula="C = A/(E×L) = "+A+"/("+E+"×"+L+")";
+  }else if(type==="impurity"){
+    var C=Math.floor(Math.random()*5)+1;
+    var V=Math.floor(Math.random()*10)+2;
+    var m=(Math.floor(Math.random()*20)+10)/10;
+    q.text="杂质检查：标准溶液浓度 "+C+" μg/mL，取 "+V+" mL，供试品 "+m+" g。求杂质限量（%）";
+    q.answer=Math.round(C*V/m/10000*10000)/100;
+    q.formula="L = (C×V/m)×100% = ("+C+"×"+V+"/"+m+")/10000×100%";
+  }else{
+    var As=(Math.floor(Math.random()*40)+40)/100;
+    var Ad=(Math.floor(Math.random()*40)+40)/100;
+    var Cd=(Math.floor(Math.random()*50)+10)/10;
+    q.text="对照品法：对照品吸光度 "+ad2(As)+"，浓度 "+Cd+" mg/mL；供试品吸光度 "+ad2(Ad)+"。求供试品浓度（mg/mL）";
+    q.answer=Math.round(Ad/As*Cd*1000)/1000;
+    q.formula="C样 = (A样/A对)×C对 = ("+ad2(Ad)+"/"+ad2(As)+")×"+Cd;
+  }
+  return q;
+}
+function ad2(n){return (Math.round(n*100)/100).toFixed(2);}
+
+function renderPhCalc(){
+  phcalcState.count=0;phcalcState.right=0;phcalcState.start=Date.now();
+  phcalcState.type="titration";
+  phcalcState.q=genPhCalcQuestion("titration");
+  $("main").innerHTML=
+  '<div class="page active">'+
+    '<div class="card"><div class="card-title"><span class="dot"></span>题型选择</div><div class="calc-mode-tabs" id="phcTabs">'+
+      '<div class="calc-mode-tab active" data-type="titration">滴定含量</div>'+
+      '<div class="calc-mode-tab" data-type="uv">紫外吸收</div>'+
+      '<div class="calc-mode-tab" data-type="impurity">杂质限量</div>'+
+      '<div class="calc-mode-tab" data-type="compare">对照品法</div>'+
+    '</div></div>'+
+    '<div class="calc-card">'+
+      '<div class="calc-question" id="phcQ" style="font-size:15px;line-height:1.7;">'+phcalcState.q.text+'</div>'+
+      '<input type="number" class="calc-input" id="phcInput" placeholder="输入答案（保留相应小数）" step="0.0001">'+
+      '<button class="calc-submit" id="phcSubmit">提交答案</button>'+
+      '<div class="calc-feedback" id="phcFb"></div>'+
+      '<div id="phcFormula" style="font-size:12px;color:var(--text-2);margin-top:8px;display:none;background:var(--m-mint-l);padding:10px;border-radius:8px;font-family:Georgia,serif;"></div>'+
+    '</div>'+
+    '<div class="calc-stats-bar">'+
+      '<div class="calc-stat"><div class="cs-num" id="phcRight">0</div><div class="cs-lbl">正确</div></div>'+
+      '<div class="calc-stat"><div class="cs-num" id="phcTotal">0</div><div class="cs-lbl">总数</div></div>'+
+      '<div class="calc-stat"><div class="cs-num" id="phcRate">0%</div><div class="cs-lbl">正确率</div></div>'+
+    '</div>'+
+  '</div>';
+
+  function refresh(){
+    phcalcState.q=genPhCalcQuestion(phcalcState.type);
+    $("phcQ").textContent=phcalcState.q.text;
+    $("phcInput").value="";
+    $("phcInput").className="calc-input";
+    $("phcFb").textContent="";
+    $("phcFb").className="calc-feedback";
+    $("phcFormula").style.display="none";
+  }
+  function updateStats(){
+    $("phcRight").textContent=phcalcState.right;
+    $("phcTotal").textContent=phcalcState.count;
+    $("phcRate").textContent=phcalcState.count===0?"0%":Math.round(phcalcState.right/phcalcState.count*100)+"%";
+  }
+  function submit(){
+    var input=$("phcInput"),fb=$("phcFb"),f=$("phcFormula");
+    var val=parseFloat(input.value);
+    if(isNaN(val))return;
+    phcalcState.count++;
+    var ans=phcalcState.q.answer;
+    var ok=Math.abs(val-ans)<Math.abs(ans)*0.02||Math.abs(val-ans)<0.01;
+    if(ok){
+      phcalcState.right++;
+      input.className="calc-input correct";
+      fb.textContent="✓ 正确！答案 "+ans;
+      fb.className="calc-feedback right";
+    }else{
+      input.className="calc-input wrong";
+      fb.textContent="✗ 正确答案 "+ans;
+      fb.className="calc-feedback wrong";
+    }
+    f.textContent="推导："+phcalcState.q.formula;
+    f.style.display="block";
+    updateStats();
+    setTimeout(refresh,2500);
+  }
+  $("phcSubmit").addEventListener("click",submit);
+  $("phcInput").addEventListener("keypress",function(e){if(e.key==="Enter")submit();});
+  var tabs=document.querySelectorAll("#phcTabs .calc-mode-tab");
+  for(var i=0;i<tabs.length;i++)tabs[i].addEventListener("click",function(){
+    var ts=document.querySelectorAll("#phcTabs .calc-mode-tab");
+    for(var j=0;j<ts.length;j++)ts[j].classList.remove("active");
+    this.classList.add("active");
+    phcalcState.type=this.dataset.type;
+    phcalcState.count=0;phcalcState.right=0;phcalcState.start=Date.now();
+    refresh();updateStats();
+  });
+}
+
+// 学习打卡日历
+function renderCalendar(){
+  loadData("checkinDays",[]).then(function(days){
+    var today=new Date();
+    var y=today.getFullYear(),m=today.getMonth();
+    var firstDay=new Date(y,m,1).getDay();
+    var daysInMonth=new Date(y,m+1,0).getDate();
+    var dayArr=days||[];
+    var checkedToday=dayArr.indexOf(today.toDateString())>=0;
+    // 连续打卡天数
+    var streak=0;
+    var d=new Date();
+    while(dayArr.indexOf(d.toDateString())>=0){streak++;d.setDate(d.getDate()-1);}
+
+    var monthNames=["1月","2月","3月","4月","5月","6月","7月","8月","9月","10月","11月","12月"];
+    var weekDays=["日","一","二","三","四","五","六"];
+
+    var calHtml='<div class="calendar-grid" style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;">';
+    weekDays.forEach(function(w){calHtml+='<div style="text-align:center;font-size:11px;color:var(--text-3);padding:4px;">'+w+'</div>';});
+    for(var i=0;i<firstDay;i++)calHtml+='<div></div>';
+    for(var d=1;d<=daysInMonth;d++){
+      var dateStr=new Date(y,m,d).toDateString();
+      var isChecked=dayArr.indexOf(dateStr)>=0;
+      var isToday=(d===today.getDate());
+      calHtml+='<div class="cal-day'+(isChecked?" checked":"")+(isToday?" today":"")+'" data-date="'+dateStr+'" style="aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:8px;font-size:13px;cursor:pointer;'+
+        (isChecked?'background:var(--m-mint-d);color:#fff;':'background:var(--m-mint-l);color:var(--text-2);')+
+        (isToday?'box-shadow:0 0 0 2px var(--m-pink-d);':'')+'">'+d+'</div>';
+    }
+    calHtml+='</div>';
+
+    $("main").innerHTML=
+    '<div class="page active">'+
+      '<div class="card" style="text-align:center;">'+
+        '<div style="font-size:13px;color:var(--text-2);margin-bottom:4px;">'+y+'年 '+monthNames[m]+'</div>'+
+        '<div style="display:flex;justify-content:center;gap:30px;margin:12px 0;">'+
+          '<div><div style="font-size:28px;font-weight:700;color:var(--m-mint-d);">'+streak+'</div><div style="font-size:11px;color:var(--text-2);">连续打卡</div></div>'+
+          '<div><div style="font-size:28px;font-weight:700;color:var(--m-pink-d);">'+dayArr.length+'</div><div style="font-size:11px;color:var(--text-2);">累计打卡</div></div>'+
+        '</div>'+
+        '<button id="checkinBtn" style="padding:10px 30px;border-radius:20px;font-size:14px;font-weight:600;'+(checkedToday?'background:var(--m-mint-l);color:var(--m-mint-d);':'background:var(--m-mint-d);color:#fff;')+'">'+(checkedToday?'✓ 今日已打卡':'今日打卡')+'</button>'+
+      '</div>'+
+      '<div class="card">'+
+        '<div class="card-title"><span class="dot"></span>打卡日历</div>'+
+        calHtml+
+        '<div style="font-size:11px;color:var(--text-3);margin-top:10px;text-align:center;">点击日期可补签/取消，绿色为已打卡</div>'+
+      '</div>'+
+    '</div>';
+
+    $("checkinBtn").addEventListener("click",function(){
+      var ts=today.toDateString();
+      var idx=dayArr.indexOf(ts);
+      if(idx>=0){dayArr.splice(idx,1);toast("已取消今日打卡");}
+      else{dayArr.push(ts);toast(" 打卡成功！");}
+      saveData("checkinDays",dayArr).then(function(){renderCalendar();});
+    });
+    var cds=document.querySelectorAll(".cal-day[data-date]");
+    for(var i=0;i<cds.length;i++)cds[i].addEventListener("click",function(){
+      var ds=this.dataset.date;
+      var idx=dayArr.indexOf(ds);
+      if(idx>=0)dayArr.splice(idx,1);
+      else dayArr.push(ds);
+      saveData("checkinDays",dayArr).then(function(){renderCalendar();});
+    });
+  });
+}
+
+// 易错知识点
+function renderMistakes(){
+  loadData("mistakes",[]).then(function(mistakes){
+    var activeSubject="all";
+    $("main").innerHTML=
+    '<div class="page active">'+
+      '<div class="card"><div class="card-title"><span class="dot"></span>添加易错点</div>'+
+        '<div class="recite-add"><input type="text" id="mkInput" placeholder="记一个易错知识点..." /><select id="mkSubject">'+SUBJECTS.map(function(s){return '<option value="'+s.name+'">'+s.name+'</option>';}).join("")+'</select><button id="mkAddBtn">+</button></div>'+
+      '</div>'+
+      '<div class="recite-subject-tabs" id="mkTabs"><div class="recite-subject-tab active" data-s="all">全部 '+mistakes.length+'</div>'+SUBJECTS.map(function(s){var c=mistakes.filter(function(m){return m.subject===s.name;}).length;return '<div class="recite-subject-tab" data-s="'+s.name+'">'+s.name+' '+c+'</div>';}).join("")+'</div>'+
+      '<div id="mkList"></div>'+
+    '</div>';
+
+    function renderList(){
+      var list=$("mkList");
+      var show=activeSubject==="all"?mistakes:mistakes.filter(function(m){return m.subject===activeSubject;});
+      if(show.length===0){list.innerHTML='<div class="empty-state"><div class="es-icon">⚠️</div><div class="es-text">暂无记录，把容易记错的点记下来</div></div>';return;}
+      list.innerHTML=show.map(function(m){
+        return '<div class="recite-item"><div class="ri-q"><span class="ri-tag">'+m.subject+'</span>'+m.text+'</div><div class="ri-actions"><button class="ri-btn" data-del="'+m.id+'" style="color:var(--danger);margin-left:auto;">删除</button></div></div>';
+      }).join("");
+      var ds=list.querySelectorAll("[data-del]");
+      for(var i=0;i<ds.length;i++)ds[i].addEventListener("click",function(){
+        var id=this.dataset.del;
+        var idx=mistakes.findIndex(function(m){return m.id===id;});
+        if(idx>=0){mistakes.splice(idx,1);saveData("mistakes",mistakes).then(function(){renderMistakes();});}
+      });
+    }
+    renderList();
+    var tabs=document.querySelectorAll("#mkTabs .recite-subject-tab");
+    for(var i=0;i<tabs.length;i++)tabs[i].addEventListener("click",function(){
+      var ts=document.querySelectorAll("#mkTabs .recite-subject-tab");
+      for(var j=0;j<ts.length;j++)ts[j].classList.remove("active");
+      this.classList.add("active");
+      activeSubject=this.dataset.s;
+      renderList();
+    });
+    $("mkAddBtn").addEventListener("click",function(){
+      var input=$("mkInput");
+      var t=input.value.trim();
+      if(!t){toast("请输入内容");return;}
+      mistakes.unshift({id:"mk_"+Date.now(),subject:$("mkSubject").value,text:t});
+      saveData("mistakes",mistakes).then(function(){input.value="";renderMistakes();});
+    });
+    $("mkInput").addEventListener("keypress",function(e){if(e.key==="Enter")$("mkAddBtn").click();});
+  });
+}
+
+// 默写
+function renderRecite(){
+  loadData("reciteQuestions",[
+    {id:"r1",subject:"药剂学",q:"简述片剂制备的湿法制粒工艺流程。"},
+    {id:"r2",subject:"药剂学",q:"影响药物溶解度的因素有哪些？"},
+    {id:"r3",subject:"药剂学",q:"简述固体分散体的概念及制备方法。"},
+    {id:"r4",subject:"药理学",q:"掌握β受体阻滞剂的药理作用及临床应用。"},
+    {id:"r5",subject:"药理学",q:"简述阿托品的作用机制及临床应用。"},
+    {id:"r6",subject:"药物化学",q:"举例说明前药原理及其在药物设计中的应用。"},
+    {id:"r7",subject:"药物化学",q:"掌握β-内酰胺类药物的化学性质和分类。"},
+    {id:"r8",subject:"药物分析学",q:"简述高效液相色谱法的基本原理。"},
+    {id:"r9",subject:"药物分析学",q:"掌握药物分析方法验证的内容。"},
+    {id:"r10",subject:"英语",q:"Write an essay on the importance of perseverance."},
+    {id:"r11",subject:"政治",q:"简述实践与认识的辩证关系。"}
+  ]).then(function(questions){
+    loadData("reciteAnswers",{}).then(function(answers){
+      var activeSubject="all";
+      $("main").innerHTML=
+      '<div class="page active">'+
+        '<div class="recite-add"><input type="text" id="reciteAddInput" placeholder="添加自定义大题..." /><select id="reciteAddSubject">'+SUBJECTS.map(function(s){return '<option value="'+s.name+'">'+s.name+'</option>';}).join("")+'</select><button id="reciteAddBtn">+</button></div>'+
+        '<div class="recite-subject-tabs" id="reciteTabs"><div class="recite-subject-tab active" data-s="all">全部</div>'+SUBJECTS.map(function(s){return '<div class="recite-subject-tab" data-s="'+s.name+'">'+s.name+'</div>';}).join("")+'</div>'+
+        '<div id="reciteList"></div>'+
+      '</div>';
+
+      function renderList(){
+        var list=$("reciteList");
+        var show=activeSubject==="all"?questions:questions.filter(function(q){return q.subject===activeSubject;});
+        if(show.length===0){list.innerHTML='<div class="empty-state"><div class="es-icon">✍️</div><div class="es-text">暂无题目，添加一个吧</div></div>';return;}
+        list.innerHTML=show.map(function(q){
+          var ans=answers[q.id]||"";
+          return '<div class="recite-item"><div class="ri-q"><span class="ri-tag">'+q.subject+'</span>'+q.q+'</div><textarea placeholder="在此默写你的答案..." data-ans="'+q.id+'">'+ans+'</textarea><div class="ri-saved '+(ans?"show":"")+'">'+(ans?"已保存 ✓":"")+'</div><div class="ri-actions"><button class="ri-btn save" data-save="'+q.id+'">保存</button><button class="ri-btn" data-clear="'+q.id+'">清空</button><button class="ri-btn" data-del-q="'+q.id+'" style="margin-left:auto;color:var(--danger);">删除题</button></div></div>';
+        }).join("");
+        var svs=list.querySelectorAll("[data-save]");
+        for(var i=0;i<svs.length;i++)svs[i].addEventListener("click",function(){
+          var id=this.dataset.save;
+          var ta=list.querySelector('[data-ans="'+id+'"]');
+          answers[id]=ta.value;
+          saveData("reciteAnswers",answers).then(function(){toast("已保存");renderRecite();});
+        });
+        var cls=list.querySelectorAll("[data-clear]");
+        for(var i=0;i<cls.length;i++)cls[i].addEventListener("click",function(){
+          var id=this.dataset.clear;
+          var ta=list.querySelector('[data-ans="'+id+'"]');
+          ta.value="";
+          delete answers[id];
+          saveData("reciteAnswers",answers).then(function(){toast("已清空");});
+        });
+        var dqs=list.querySelectorAll("[data-del-q]");
+        for(var i=0;i<dqs.length;i++)dqs[i].addEventListener("click",function(){
+          if(confirm("删除这道题？")){
+            var id=this.dataset.delQ;
+            var idx=questions.findIndex(function(q){return q.id===id;});
+            if(idx>=0){questions.splice(idx,1);saveData("reciteQuestions",questions).then(function(){renderRecite();});}
+          }
+        });
+      }
+      renderList();
+
+      var tabs=document.querySelectorAll(".recite-subject-tab");
+      for(var i=0;i<tabs.length;i++)tabs[i].addEventListener("click",function(){
+        var ts=document.querySelectorAll(".recite-subject-tab");
+        for(var j=0;j<ts.length;j++)ts[j].classList.remove("active");
+        this.classList.add("active");
+        activeSubject=this.dataset.s;
+        renderList();
+      });
+
+      $("reciteAddBtn").addEventListener("click",function(){
+        var input=$("reciteAddInput");
+        var subject=$("reciteAddSubject").value;
+        var q=input.value.trim();
+        if(!q){toast("请输入题目");return;}
+        questions.push({id:"r_"+Date.now(),subject:subject,q:q});
+        saveData("reciteQuestions",questions).then(function(){input.value="";renderRecite();});
+      });
+    });
+  });
+}
+
+// 备忘录
+function renderMemo(){
+  loadData("memos",[]).then(function(memos){
+    $("main").innerHTML=
+    '<div class="page active">'+
+      '<div class="memo-link-card" id="yzsLink"><div class="mlc-icon"></div><div class="mlc-info"><div class="mlc-name">中国研究生招生信息网</div><div class="mlc-url">yz.chsi.com.cn · 官方报名入口</div></div><div class="mlc-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div></div>'+
+      '<div class="memo-link-card" id="zjuLink" style="background:linear-gradient(135deg,var(--m-mint-d),var(--m-yellow-d));"><div class="mlc-icon"></div><div class="mlc-info"><div class="mlc-name">浙江大学药学院</div><div class="mlc-url">cps.zju.edu.cn · 招生信息</div></div><div class="mlc-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div></div>'+
+      '<div class="card"><div class="card-title"><span class="dot"></span>浙大药学复试信息</div><div style="font-size:13px;color:var(--text-2);line-height:1.9;">'+
+        '<b style="color:var(--text-1)">复试科目：</b>药学综合知识面试 + 英语听力口语 + 实验操作考核<br>'+
+        '<b style="color:var(--text-1)">复试内容：</b>专业知识问答、科研素养、综合素质<br>'+
+        '<b style="color:var(--text-1)">复试比例：</b>一般不低于1:1.2<br>'+
+        '<b style="color:var(--text-1)">总成绩：</b>初试成绩÷5×60% + 复试成绩×40%（仅供参考）<br>'+
+        '<b style="color:var(--text-1)">复试时间：</b>次年3月中下旬<br>'+
+        '<b style="color:var(--text-1)">参考用书：</b>同初试349四科参考书，注重综合应用<br>'+
+        '<div style="margin-top:8px;padding:8px 10px;background:var(--m-yellow-l);border-radius:8px;font-size:12px;color:var(--m-yellow-d);"> 提示：复试具体方案以次年官网通知为准，建议提前关注药学院官网</div>'+
+      '</div></div>'+
+      '<div class="card memo-add"><div class="card-title"><span class="dot"></span>新建备忘</div><select id="memoCat"><option value="报名">报名信息</option><option value="院校">院校信息</option><option value="分数线">分数线</option><option value="复试">复试相关</option><option value="时间">重要时间</option><option value="其他">其他</option></select><input type="text" id="memoTitle" placeholder="标题（如：浙大药学复试线）"><textarea id="memoContent" placeholder="详细内容..."></textarea><button id="memoAddBtn">保存备忘</button></div>'+
+      '<div id="memoList"></div>'+
+    '</div>';
+
+    $("yzsLink").addEventListener("click",function(){window.open("https://yz.chsi.com.cn","_blank");});
+    $("zjuLink").addEventListener("click",function(){window.open("http://www.cps.zju.edu.cn","_blank");});
+
+    function renderMemoList(){
+      var list=$("memoList");
+      if(memos.length===0){list.innerHTML='<div class="empty-state"><div class="es-icon"></div><div class="es-text">暂无备忘，记录重要考研信息</div></div>';return;}
+      list.innerHTML=memos.map(function(m){
+        return '<div class="memo-item"><div class="mi-cat">'+m.cat+'</div><div class="mi-del" data-del="'+m.id+'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg></div><div class="mi-title">'+m.title+'</div>'+(m.content?'<div class="mi-content">'+m.content.replace(/\n/g,"<br>")+'</div>':'')+'<div class="mi-date">'+m.date+'</div></div>';
+      }).join("");
+      var ds=list.querySelectorAll("[data-del]");
+      for(var i=0;i<ds.length;i++)ds[i].addEventListener("click",function(){
+        var id=this.dataset.del;
+        var idx=memos.findIndex(function(m){return m.id===id;});
+        if(idx>=0){memos.splice(idx,1);saveData("memos",memos).then(function(){renderMemoList();});}
+      });
+    }
+    renderMemoList();
+
+    $("memoAddBtn").addEventListener("click",function(){
+      var cat=$("memoCat").value;
+      var title=$("memoTitle").value.trim();
+      var content=$("memoContent").value.trim();
+      if(!title){toast("请输入标题");return;}
+      memos.unshift({id:"m_"+Date.now(),cat:cat,title:title,content:content,date:new Date().toLocaleDateString("zh-CN")});
+      saveData("memos",memos).then(function(){renderMemo();});
+    });
+  });
+}
+
+// AI助手
+function renderAI(){
+  loadData("aiHistory",[
+    {role:"ai",text:"你好！我是你的考研AI助手 \n目标：浙江大学 药学（105500）\n初试：政治+英语一+349药学综合\n\n我可以帮你：\n• 解答药剂学/药理/药化/药分问题\n• 制定复习计划\n• 讲解349考点\n\n试试问我：\n• 片剂湿法制粒工艺？\n• β受体阻滞剂的药理作用？\n• 前药原理是什么？"}
+  ]).then(function(history){
+    $("main").innerHTML=
+    '<div class="page active" style="display:flex;flex-direction:column;height:calc(100vh - 54px - var(--safe-top) - 76px);">'+
+      '<div class="ai-messages" id="aiMessages"></div>'+
+      '<div class="ai-input-bar"><input type="text" id="aiInput" placeholder="问点什么..."><button id="aiSend"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button></div>'+
+    '</div>';
+
+    function renderMessages(){
+      var el=$("aiMessages");
+      el.innerHTML=history.map(function(m){
+        if(m.role==="typing"){
+          return '<div class="ai-msg ai"><div class="am-avatar">AI</div><div class="am-bubble"><div class="ai-typing"><span></span><span></span><span></span></div></div></div>';
+        }
+        return '<div class="ai-msg '+m.role+'"><div class="am-avatar">'+(m.role==="ai"?"AI":"我")+'</div><div class="am-bubble">'+m.text.replace(/\n/g,"<br>")+'</div></div>';
+      }).join("");
+      el.scrollTop=el.scrollHeight;
+    }
+    renderMessages();
+
+    function send(){
+      var input=$("aiInput");
+      var text=input.value.trim();
+      if(!text)return;
+      history.push({role:"user",text:text});
+      input.value="";
+      history.push({role:"ai",text:"__typing__"});
+      renderMessages();
+      getAIReply(text).then(function(reply){
+        history.pop();
+        history.push({role:"ai",text:reply});
+        if(history.length>60)history=history.slice(-60);
+        saveData("aiHistory",history).then(function(){renderMessages();});
+      });
+    }
+    $("aiSend").addEventListener("click",send);
+    $("aiInput").addEventListener("keypress",function(e){if(e.key==="Enter")send();});
+  });
+}
+
+function getAIReply(q){
+  return new Promise(function(resolve){
+    setTimeout(function(){
+      resolve(generateReply(q));
+    },500+Math.random()*500);
+  });
+}
+function generateReply(q){
+  var lower=q.toLowerCase();
+  if(/片剂|制粒|压片/.test(q)){
+    return "片剂制备的【湿法制粒工艺】流程：\n\n1. 原料粉碎与过筛（80-100目）\n2. 混合：药物+辅料（填充剂、崩解剂）\n3. 制软材：加黏合剂（淀粉浆/HPMC）\n4. 制湿颗粒：过14-20目筛\n5. 干燥：50-60℃，含水量2-4%\n6. 整粒：过筛使颗粒均匀\n7. 总混：加润滑剂、外加崩解剂\n8. 压片：调节片重和硬度\n9. 包衣（可选）\n\n质量控制：含量均匀度、重量差异、硬度、脆碎度、崩解时限。\n\n参考：《药剂学》方亮主编 人卫2023第9版";
+  }
+  if(/溶解度|增溶/.test(q)){
+    return "影响药物溶解度的因素：\n\n【药物因素】\n• 分子结构、极性、晶型\n• 粒径（粒径越小溶解越快）\n\n【外部因素】\n• 温度（多数随温度升高增大）\n• 溶剂性质（相似相溶）\n• pH值（弱酸弱碱受影响大）\n• 同离子效应、盐效应\n\n【增加溶解度方法】\n制成盐类、混合溶剂、增溶剂、包合技术（环糊精）、固体分散体。\n\n参考：《药剂学》方亮主编 人卫2023";
+  }
+  if(/固体分散/.test(q)){
+    return "【固体分散体】\n\n概念：药物以分子、无定形或微晶状态分散在载体中的体系。\n\n常用载体材料：\n• PEG（聚乙二醇）\n• PVP（聚维酮）\n• 泊洛沙姆\n• 纤维素衍生物（HPMC等）\n\n药物分散形式：\n• 分子状态\n• 无定形\n• 微晶\n\n制备方法：\n• 熔融法\n• 溶剂法\n• 溶剂-熔融法\n• 研磨法\n\n溶出机制：载体溶出带动药物溶出。\n\n参考：《药剂学》方亮主编 人卫2023";
+  }
+  if(/β受体|beta|阻滞|普萘洛尔/.test(lower)){
+    return "【β受体阻滞剂】药理作用与临床应用：\n\n药理作用：\n• 心脏：减慢心率、抑制心肌收缩力、降低心肌耗氧\n• 支气管：收缩平滑肌（β2阻断）\n• 代谢：抑制脂肪/糖原分解\n• 肾素：抑制释放，降低血压\n\n临床应用：\n• 高血压（合并心绞痛、心梗后）\n• 心绞痛、心肌梗死\n• 心律失常\n• 心力衰竭（稳定期小剂量）\n• 青光眼（噻吗洛尔）\n\n禁忌：支气管哮喘、严重心动过缓、II/III度房室传导阻滞。\n\n参考：《药理学》杨宝峰 人卫2018第9版";
+  }
+  if(/阿托品/.test(q)){
+    return "【阿托品】\n\n作用机制：竞争性阻断M胆碱受体。\n\n药理作用：\n• 腺体：抑制分泌（唾液、汗、胃液）\n• 眼：散瞳、升高眼压、调节麻痹\n• 平滑肌：松弛内脏平滑肌\n• 心血管：解除迷走神经对心脏抑制，加快心率\n• 中枢：大剂量兴奋\n\n临床应用：\n• 解除平滑肌痉挛（胃肠绞痛）\n• 抑制腺体分泌（麻醉前给药）\n• 眼科（散瞳检查）\n• 抗心律失常（窦性心动过缓）\n• 解救有机磷中毒\n\n不良反应：口干、视力模糊、心悸、皮肤干燥；中毒出现中枢兴奋。\n\n参考：《药理学》杨宝峰 人卫2018";
+  }
+  if(/前药|prodrug/.test(lower)){
+    return "【前药原理】\n\n概念：将活性药物修饰为无活性/低活性形式，体内经酶或化学作用转化为原药发挥疗效。\n\n目的：\n• 提高生物利用度\n• 增加稳定性\n• 降低毒副作用\n• 改善口感/顺应性\n• 靶向输送\n\n经典案例：\n• 氨苄西林→匹氨西林（酯化，口服吸收提高）\n• 奥司他韦（体内代谢为活性形式）\n• 左旋多巴（透血脑屏障后脱羧为多巴胺）\n\n设计要点：选择合适载体和可裂解键，确保体内转化效率。\n\n参考：《药物化学》徐云根主编 人卫2023";
+  }
+  if(/β-内酰胺|内酰胺|青霉素|头孢/.test(q)){
+    return "【β-内酰胺类药物】\n\n化学性质：\n• β-内酰胺环是活性必需结构\n• 环张力大，易水解开环失活\n• 酸碱条件下不稳定\n\n分类：\n1. 青霉素类：青霉素G、氨苄西林、阿莫西林\n2. 头孢菌素类：一至五代\n3. 碳青霉烯类：亚胺培南、美罗培南\n4. 单环类：氨曲南\n5. β-内酰胺酶抑制剂：克拉维酸、舒巴坦\n\n构效关系：\n• β-内酰胺环必需\n• 与另一环稠合增强活性\n• 侧链影响抗菌谱和稳定性\n\n参考：《药物化学》徐云根主编 人卫2023";
+  }
+  if(/色谱|液相|HPLC|hplc/.test(q)){
+    return "【高效液相色谱法 HPLC】\n\n原理：液体为流动相，高压泵入装有固定相的色谱柱，各组分分配系数不同实现分离。\n\n组成：\n• 高压输液泵\n• 进样器\n• 色谱柱（C18反相最常用）\n• 检测器（UV/DAD/荧光/MS）\n• 数据处理系统\n\n方法学考察：\n专属性、线性、精密度、准确度、检测限、定量限、耐用性。\n\n药典应用：含量测定、有关物质检查、残留溶剂检测。\n\n参考：《药物分析学》曾苏主编 高教社2021第3版";
+  }
+  if(/方法验证|验证/.test(q)&&!/色谱/.test(q)){
+    return "【药物分析方法验证】\n\n验证内容：\n• 专属性\n• 线性\n• 范围\n• 准确度\n• 精密度（重复性、中间精密度、重现性）\n• 检测限（LOD）\n• 定量限（LOQ）\n• 耐用性\n\n差异：\n• 鉴别：专属性\n• 杂质检查：LOD、LOQ、专属性\n• 含量测定：准确度、精密度、线性、范围、专属性\n\n参考：《药物分析学》曾苏主编 高教社2021";
+  }
+  if(/english|英语|essay|写作/i.test(q)){
+    return "考研英语复习建议：\n\n词汇：大纲5500词，每天背+复习，用艾宾浩斯曲线\n\n阅读：每天精读1-2篇真题，分析长难句，总结题型（主旨/细节/推断/态度）\n\n写作：\n• 小作文（应用文）：背模板+练格式\n• 大作文：积累框架句型，每周练1篇\n\n时间分配：\n• 7-8月：词汇+长难句+阅读方法\n• 9-10月：真题精刷（近10年）\n• 11月：写作模板+二刷真题\n• 12月：模拟+查漏补缺";
+  }
+  if(/政治|实践|认识/.test(q)){
+    return "【实践与认识的辩证关系】\n\n实践决定认识：\n• 实践是认识的来源\n• 实践是认识发展的动力\n• 实践是认识的目的\n• 实践是检验认识真理性的唯一标准\n\n认识对实践有能动反作用：\n• 正确认识指导实践走向成功\n• 错误认识导致实践失败\n\n认识运动规律：\n实践→认识→实践，螺旋式上升\n感性认识→理性认识→实践\n\n常以材料分析题出现，结合事例说明。";
+  }
+  if(/计划|plan|安排|规划/.test(q)){
+    return "为你制定一周复习建议：\n\n周一-周五：\n• 上午：英语阅读1篇+背单词（1.5h）\n• 下午：349专业课2h（轮换药剂学/药理/药化/药分）\n• 晚上：政治1h+专业课1h+默写练习\n\n周六：\n• 上午：英语全套模拟\n• 下午：349专业课真题1套\n• 晚上：错题整理\n\n周日：\n• 上午：复习本周笔记\n• 下午：弱项突破\n• 晚上：休息调整\n\n每学习45分钟休息10分钟，每天保证7h有效学习。需要某科目详细计划告诉我！";
+  }
+  if(/浙大|浙江大学|zju/.test(lower)){
+    return "浙江大学药学院2027考研信息：\n\n招生专业：药学（专业学位 105500）\n学习方式：全日制\n初试科目：政治 + 英语一 + 349药学综合\n\n349药学综合包含：\n• 药物化学\n• 药剂学\n• 药物分析学\n• 药理学\n\n参考书目：\n• 药化：徐云根《药物化学》人卫2023\n• 药剂：方亮《药剂学》人卫2023第9版\n• 药分：曾苏《药物分析学》高教社2021\n• 药理：杨宝峰《药理学》人卫2018第9版\n\n官网：cps.zju.edu.cn\n研招网：yz.chsi.com.cn";
+  }
+  if(/你好|hi|hello|在吗/i.test(lower)){
+    return "你好！我是你的考研AI助手 \n目标：浙江大学 药学（105500）\n\n可以问我药剂学、药理学、药物化学、药物分析学的问题，也能帮你制定复习计划。加油！";
+  }
+  return "关于「"+q+"」，建议从以下角度思考：\n\n1. 回顾教材相关章节基础知识\n2. 结合真题了解常考角度\n3. 整理笔记，形成知识框架\n4. 用默写功能检验掌握程度\n\n可以把问题描述更具体些，我会尽力解答。也可以上传资料到对应科目随时查看。";
+}
+
+// 路由
+function renderPage(page){
+  if(page==="home")renderHome();
+  else if(page==="plan")renderPlan();
+  else if(page==="pomodoro")renderPomodoro();
+  else if(page==="countdown")renderCountdown();
+  else if(page==="calendar")renderCalendar();
+  else if(page==="formula")renderFormula();
+  else if(page==="calctitle")renderPhCalc();
+  else if(page==="mistakes")renderMistakes();
+  else if(page==="recite")renderRecite();
+  else if(page==="memo")renderMemo();
+  else if(page==="ai")renderAI();
+}
+
+// 交互
+function openDrawer(){$("drawer").classList.add("open");$("drawerMask").classList.add("open");}
+function closeDrawer(){$("drawer").classList.remove("open");$("drawerMask").classList.remove("open");}
+$("menuBtn").addEventListener("click",openDrawer);
+$("drawerMask").addEventListener("click",closeDrawer);
+var bbItems=document.querySelectorAll(".bb-item");
+for(var i=0;i<bbItems.length;i++)bbItems[i].addEventListener("click",function(){goto(this.dataset.page);});
+
+setInterval(function(){if(currentPage==="countdown")renderCountdown();},1000);
+
+function toast(msg){
+  var t=$("toast");
+  t.textContent=msg;
+  t.classList.add("show");
+  clearTimeout(t._timer);
+  t._timer=setTimeout(function(){t.classList.remove("show");},2000);
+}
+
+// 启动
+openDB().then(function(){
+  renderNav();
+  renderHome();
+});
+</script>
+</body>
+</html>
