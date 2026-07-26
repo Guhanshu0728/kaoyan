@@ -439,11 +439,11 @@ img{max-width:100%;}
 @media(min-width:768px){
   body{background:#e8e0ec;display:flex;justify-content:center;align-items:center;min-height:100vh;}
   #app{max-width:820px;width:820px;margin:0 auto;position:relative;box-shadow:0 0 40px rgba(0,0,0,.08);background:var(--bg);height:100vh;height:100dvh;overflow:hidden;border-radius:0;display:flex;}
-  .topbar{position:fixed;top:0;left:280px;right:0;max-width:540px;margin-left:0;height:calc(54px + var(--safe-top));border-radius:0;}
-  .bottom-bar{position:fixed;bottom:0;left:280px;right:0;max-width:540px;margin-left:0;}
-  .drawer{position:fixed;top:0;left:0;bottom:0;width:280px;transform:translateX(0);box-shadow:none;border-right:1px solid rgba(0,0,0,.05);}
-  .drawer-mask{display:none;}
-  .main{position:fixed;top:calc(54px + var(--safe-top));left:280px;right:0;bottom:0;max-width:540px;margin-left:0;}
+  .topbar{position:fixed;top:0;left:280px;right:0;max-width:540px;margin-left:0;height:calc(54px + var(--safe-top));border-radius:0;transform:none !important;}
+  .bottom-bar{position:fixed;bottom:0;left:280px;right:0;max-width:540px;margin-left:0;transform:none !important;}
+  .drawer{position:fixed;top:0;left:0;bottom:0;width:280px;transform:translateX(0) !important;box-shadow:none;border-right:1px solid rgba(0,0,0,.05);}
+  .drawer-mask{display:none !important;}
+  .main{position:fixed;top:calc(54px + var(--safe-top));left:280px;right:0;bottom:0;max-width:540px;margin-left:0;transform:none !important;}
   .topbar .menu-btn{display:none;}
 }
 </style>
